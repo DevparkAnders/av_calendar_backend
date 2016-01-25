@@ -23,9 +23,15 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-// $app->withFacades();
+$app->withFacades();
+class_alias(Tymon\JWTAuth\Facades\JWTAuth::class, 'JWTAuth');
 
-// $app->withEloquent();
+$app->withEloquent();
+
+/**
+ * Custom configuration files
+ */
+$app->configure('jwt');
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +84,9 @@ $app->singleton(
 |
 */
 
+$app->register(Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+$app->register(Mnabialek\LaravelSqlLogger\Providers\ServiceProvider::class);
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
