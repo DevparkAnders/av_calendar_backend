@@ -9,6 +9,11 @@ In order to run the application you need to setup server with:
 
 For development process, you should use [Laravel Homestead](https://laravel.com/docs/5.2/homestead)
 
+### Coding standards
+
+In order to follow code standards, you should use PSR-2, install [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) and before each commit you should run this fixer to make sure your code is properly formatted. Base CS fixer configuration file has created as `.php_cs` to make sure every developer uses the same rules for code formatting.   
+
+
 ### Installation
 
 1. Copy `.env.sample` as `.env`
@@ -26,7 +31,6 @@ For development process, you should use [Laravel Homestead](https://laravel.com/
     ```
     
     to generate random `JWT_SECRET` token in your `.env` file
-    
     
 ### Issues
 
