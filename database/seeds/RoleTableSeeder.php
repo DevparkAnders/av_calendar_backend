@@ -14,16 +14,9 @@ class RoleTableSeeder extends Seeder
     public function run()
     {
         if (!Role::count()) {
-            $roles = [
-                ['name' => RoleType::ADMIN],
-                ['name' => RoleType::DEALER],
-                ['name' => RoleType::DEVELOPER],
-                ['name' => RoleType::CLIENT],
-            ];
-            
-            foreach ($roles as $role) {
-                Role::create($role);
-                $this->command->info("Role '{$role['name']}' has been created");
+            foreach (RoleType::all() as $type) {
+                Role::create(['name' => $type]);
+                $this->command->info("Role '{$type}' has been created");
             }
         }
     }
