@@ -20,29 +20,19 @@ In order to follow code standards, you should use PSR-2, install [PHP CS Fixer](
 
 2. In `.env` file:
 
-    - Set `APP_KEY` to random 32 characters long string
+    - Set `APP_KEY` to random 32 characters long string using the following command:
     
-    - If you set `SQL_LOG_QUERIES` or `SQL_LOG_SLOW_QUERIES` to true, make sure you have created directory set as `SQL_LOG_DIRECTORY` in storage path and you have valid permissions to create and override files in this directory    
+    ```
+    php artisan key:generate
+    ```
+    
+    - If you set `SQL_LOG_QUERIES` or `SQL_LOG_SLOW_QUERIES` to true (to log SQL queries), make sure you have created directory set as `SQL_LOG_DIRECTORY` in storage path and you have valid permissions to create and override files in this directory    
 
 3. Run    
 
     ```
-    php artisan jwt:secret
+    php artisan jwt:generate
     ```
     
     to generate random `JWT_SECRET` token in your `.env` file
-    
-### Issues
 
-IDE helper generator seems not to work at the moment in Lumen:
-
-```php 
-   artisan ide-helper:generate
-   Segmentation fault
-```
-
-```php 
-artisan ide-helper:models
-Exception: Missing argument 1 for Illuminate\Database\Eloquent\Model::morphedByMany(), called in /home/vagrant/Code/cep_backend/vendor/barryvdh/laravel-ide-helper/src/Console/ModelsCommand.php on line 365 and defined
-   Could not analyze class App\User.
-```

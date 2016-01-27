@@ -6,7 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.2.*"
+        "laravel/framework": "5.2.*",
+        "barryvdh/laravel-ide-helper": "^2.1",
+        "doctrine/dbal": "^2.5",
+        "tymon/jwt-auth": "^0.5.6",
+        "mnabialek/laravel-sql-logger": "dev-develop"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
