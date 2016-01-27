@@ -155,27 +155,12 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
-        /**
-         * Ide helper
-         */
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-
-        /**
-         * JWT token
-         */
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-
-        /**
-         * SQL logger
-         */
-        Mnabialek\LaravelSqlLogger\Providers\ServiceProvider::class,
-
-        /**
-         * Custom API response
-         */
         App\Providers\ResponseMacroServiceProvider::class,
 
+        /*
+         * 3rd party providers 
+         */
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
     ],
 
     /*
@@ -222,6 +207,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
 
+        /*
+         * 3rd party aliases 
+         */
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 

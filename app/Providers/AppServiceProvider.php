@@ -23,6 +23,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        if ($this->app->environment('local')) {
+            $this->registerLocalProviders();
+        }
+    }
+
+    /**
+     * Register local providers that should be used only for development
+     * purposes
+     */
+    protected function registerLocalProviders()
+    {
+        $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        $this->app->register(\Mnabialek\LaravelSqlLogger\Providers\ServiceProvider::class);
     }
 }
