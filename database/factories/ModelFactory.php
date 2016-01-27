@@ -11,11 +11,23 @@
 |
 */
 
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->email,
-        'password' => bcrypt(str_random(10)),
-        'remember_token' => str_random(10),
+        'email' => $faker->unique()->safeEmail,
+        'password' => bcrypt($faker->password),
+        'first_name' => $faker->firstName,
+        'last_name' => $faker->lastName,
+        'role_id' => $faker->randomElement(\App\Models\Role::all()->pluck('id')->all()),
+    ];
+});
+
+$factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
+
+    $projectName = $faker->unique()->company;
+    return [
+        'name' => $projectName,
+        'short_name' => mb_substr($projectName,0,15),
+        'closed' => $faker->boolean(),
+        'deleted' => $faker->boolean(),
     ];
 });

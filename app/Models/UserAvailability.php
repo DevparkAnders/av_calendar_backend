@@ -10,6 +10,11 @@ class UserAvailability extends Model
     protected $table = 'user_availability';
 
     /**
+     * {inheritdoc}
+     */
+    public $timestamps = false;
+
+    /**
      * Availability is assigned to specific user
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

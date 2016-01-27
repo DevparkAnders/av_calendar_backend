@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('password', 60);
             $table->string('first_name',255);
             $table->string('last_name',255);
-            $table->unsignedInteger('role_id');
+            $table->unsignedInteger('role_id')->index();
             $table->string('avatar',100);
             $table->rememberToken();
             $table->boolean('deleted')->default(false);

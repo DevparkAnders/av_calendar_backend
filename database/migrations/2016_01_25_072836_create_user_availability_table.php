@@ -15,10 +15,10 @@ class CreateUserAvailabilityTable extends Migration
         
         Schema::create('user_availability', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->index();
             $table->date('day');
-            $table->time('time_start');
-            $table->time('time_stop');
+            $table->time('time_start')->nullable();
+            $table->time('time_stop')->nullable();
             $table->boolean('available')->default(true);
             $table->string('description',50);
         });
