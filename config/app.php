@@ -171,6 +171,11 @@ return [
          */
         Mnabialek\LaravelSqlLogger\Providers\ServiceProvider::class,
 
+        /**
+         * Custom API response
+         */
+        App\Providers\ResponseMacroServiceProvider::class,
+
     ],
 
     /*
