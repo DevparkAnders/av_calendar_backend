@@ -64,4 +64,14 @@ class User extends Model implements
     {
         return $this->hasMany(UserAvailability::class);
     }
+
+    /**
+     * Whether user is deleted or not
+     *
+     * @return bool
+     */
+    public function isDeleted()
+    {
+        return (bool)$this->deleted;
+    }
 }

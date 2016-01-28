@@ -22,6 +22,7 @@ class Handler extends ExceptionHandler
         HttpException::class,
         ModelNotFoundException::class,
         ValidationException::class,
+        ApiException::class,
     ];
 
     /**
@@ -29,23 +30,34 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception  $e
+     * @param  \Exception $e
+     *
      * @return void
      */
     public function report(Exception $e)
     {
+        // @todo need to report errors
         return parent::report($e);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception $e
+     *
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $e)
     {
+        // handle API exception
+        if ($e instanceof ApiException) {
+            return response()->api($e->getResponseData(), $e->getStatusCode(),
+                $e->getHeaders());
+        }
+
+        // @todo handle other errors
+
         return parent::render($request, $e);
     }
 }

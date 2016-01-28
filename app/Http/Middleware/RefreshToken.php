@@ -4,13 +4,12 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\AuthInvalidTokenException;
 use App\Exceptions\AuthTokenExpiredException;
-use App\Exceptions\AuthUserNotFoundException;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\JwtAuth;
 
-class Authenticate
+class RefreshToken
 {
     /**
      * @var JwtAuth
@@ -18,7 +17,7 @@ class Authenticate
     protected $guard;
 
     /**
-     * Authenticate constructor.
+     * RefreshToken constructor.
      *
      * @param JwtAuth $guard
      */
@@ -32,28 +31,26 @@ class Authenticate
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
-     * @param  string|null $guard
      *
      * @return mixed
      * @throws AuthInvalidTokenException
      * @throws AuthTokenExpiredException
-     * @throws AuthUserNotFoundException
+     * @internal param null|string $guard
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next)
     {
+        $response = $next($request);
+        
         try {
-            $user = $this->guard->parseToken()->authenticate();
+            $newToken = $this->guard->parseToken()->refresh();
         } catch (TokenExpiredException $e) {
             throw new AuthTokenExpiredException();
         } catch (\Exception $e) {
             throw new AuthInvalidTokenException();
         }
-        
-        // we allow authenticate only users that are not deleted
-        if (!$user || $user->isDeleted()) {
-            throw new AuthUserNotFoundException();
-        }
 
-        return $next($request);
+        $response->headers->set('Authorization', 'Bearer ' . $newToken);
+
+        return $response;
     }
 }

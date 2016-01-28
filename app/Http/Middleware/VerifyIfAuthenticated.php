@@ -2,15 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\AuthInvalidTokenException;
-use App\Exceptions\AuthTokenExpiredException;
-use App\Exceptions\AuthUserNotFoundException;
+use App\Exceptions\AuthAlreadyLoggedException;
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\JwtAuth;
 
-class Authenticate
+class VerifyIfAuthenticated
 {
     /**
      * @var JwtAuth
@@ -18,7 +15,7 @@ class Authenticate
     protected $guard;
 
     /**
-     * Authenticate constructor.
+     * VerifyIfAuthenticated constructor.
      *
      * @param JwtAuth $guard
      */
@@ -35,23 +32,20 @@ class Authenticate
      * @param  string|null $guard
      *
      * @return mixed
-     * @throws AuthInvalidTokenException
-     * @throws AuthTokenExpiredException
-     * @throws AuthUserNotFoundException
+     * @throws AuthAlreadyLoggedException
      */
     public function handle($request, Closure $next, $guard = null)
     {
+        $user = null;
         try {
             $user = $this->guard->parseToken()->authenticate();
-        } catch (TokenExpiredException $e) {
-            throw new AuthTokenExpiredException();
         } catch (\Exception $e) {
-            throw new AuthInvalidTokenException();
+            // we don't care about exceptions in this place
         }
-        
-        // we allow authenticate only users that are not deleted
-        if (!$user || $user->isDeleted()) {
-            throw new AuthUserNotFoundException();
+
+        // if user is not deleted it means they are already logged
+        if ($user && !$user->isDeleted()) {
+            throw new AuthAlreadyLoggedException();
         }
 
         return $next($request);

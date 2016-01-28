@@ -10,22 +10,19 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+Route::group(['middleware' => 'api'], function () {
+    Route::group(['middleware' => ['guest', 'throttle:5,1']], function () {
+        Route::post('auth', 'AuthController@login');
+    });
 
-Route::get('/', function () {
-    return response()->api(['item' => ['name' => 'test']]);
-});
+    Route::group(['middleware' => 'auth'], function () {
+        Route::delete('auth', 'AuthController@logout');
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| This route group applies the "web" middleware group to every route
-| it contains. The "web" middleware group is defined in your HTTP
-| kernel and includes session state, CSRF protection, and more.
-|
-*/
-
-Route::group(['middleware' => ['web']], function () {
-    //
+        Route::group(['middleware' => 'refresh.token'], function () {
+            Route::get('/', function () {
+                // @todo this is test route only - will be removed later
+                return response()->api(['item' => auth()->user()]);
+            });
+        });
+    });
 });
