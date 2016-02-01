@@ -2,7 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\RequestRateExceededException;
+use App\Helpers\ApiResponse;
+use App\Helpers\ErrorCode;
 use Closure;
 use Illuminate\Http\Response;
 use Illuminate\Cache\RateLimiter;
@@ -11,7 +12,7 @@ use Illuminate\Cache\RateLimiter;
  * Class ThrottleRequests
  * 
  * This class is based on Illuminate\Routing\Middleware\ThrottleRequests however
- * it throws custom exception instead of just returning response
+ * it return custom response in case of too many attempts
  *
  * @package App\Http\Middleware
  */
@@ -43,7 +44,6 @@ class ThrottleRequests
      * @param  int $decayMinutes
      *
      * @return mixed
-     * @throws RequestRateExceededException
      */
     public function handle(
         $request,
@@ -56,7 +56,8 @@ class ThrottleRequests
         if ($this->limiter->tooManyAttempts($key, $maxAttempts,
             $decayMinutes)
         ) {
-            throw (new RequestRateExceededException())->setHeaders(
+            return ApiResponse::responseError(ErrorCode::REQUESTS_RATE_EXCEEDED,
+                429, [],
                 [
                     'Retry-After' => $this->limiter->availableIn($key),
                     'X-RateLimit-Limit' => $maxAttempts,

@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Exceptions\ValidationException;
+use App\Helpers\ApiResponse;
+use App\Helpers\ErrorCode;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class Request extends FormRequest
@@ -18,15 +19,15 @@ abstract class Request extends FormRequest
     }
 
     /**
-     * If validation fails we want to throw custom exception with errors
+     * If validation fails we return error response
      *
      * @param array $errors
      *
      * @return \Symfony\Component\HttpFoundation\Response|void
-     * @throws ValidationException
      */
     public function response(array $errors)
     {
-        throw (new ValidationException())->setFields($errors);
+        return ApiResponse::responseError(ErrorCode::VALIDATION_FAILED, 422,
+            $errors);
     }
 }
