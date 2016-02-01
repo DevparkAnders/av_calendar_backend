@@ -93,12 +93,10 @@ class AuthControllerTest extends \TestCase
     {
         $this->createUser(0);
         $token = JWTAuth::fromUser($this->user);
-        
-        // @todo - this header doesn't work in tests!
 
-//        $this->delete('/auth',[], ['Authorization' => 'Bearer ' . $token])
-//            ->seeStatusCode(204)
-//            ->isJson();
+        $this->delete('/auth', [], ['Authorization' => 'Bearer ' . $token])
+            ->seeStatusCode(204)
+            ->isJson();
     }
 
     protected function createUser($deleted = 0)

@@ -22,9 +22,9 @@ class RefreshToken
     public function handle($request, Closure $next)
     {
         $response = $next($request);
-        
+
         try {
-            $newToken = JWTAuth::parseToken()->refresh();
+            $newToken = JWTAuth::setRequest($request)->parseToken()->refresh();
         } catch (TokenExpiredException $e) {
             return ApiResponse::responseError(ErrorCode::AUTH_EXPIRED_TOKEN,
                 400);
