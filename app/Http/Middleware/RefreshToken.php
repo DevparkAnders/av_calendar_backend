@@ -2,30 +2,14 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\AuthInvalidTokenException;
-use App\Exceptions\AuthTokenExpiredException;
+use App\Helpers\ApiResponse;
+use App\Helpers\ErrorCode;
 use Closure;
-use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\JwtAuth;
+use JWTAuth;
 
 class RefreshToken
 {
-    /**
-     * @var JwtAuth
-     */
-    protected $guard;
-
-    /**
-     * RefreshToken constructor.
-     *
-     * @param JwtAuth $guard
-     */
-    public function __construct(JwtAuth $guard)
-    {
-        $this->guard = $guard;
-    }
-
     /**
      * Handle an incoming request.
      *
@@ -33,8 +17,6 @@ class RefreshToken
      * @param  \Closure $next
      *
      * @return mixed
-     * @throws AuthInvalidTokenException
-     * @throws AuthTokenExpiredException
      * @internal param null|string $guard
      */
     public function handle($request, Closure $next)
@@ -42,11 +24,13 @@ class RefreshToken
         $response = $next($request);
         
         try {
-            $newToken = $this->guard->parseToken()->refresh();
+            $newToken = JWTAuth::parseToken()->refresh();
         } catch (TokenExpiredException $e) {
-            throw new AuthTokenExpiredException();
+            return ApiResponse::responseError(ErrorCode::AUTH_EXPIRED_TOKEN,
+                400);
         } catch (\Exception $e) {
-            throw new AuthInvalidTokenException();
+            return ApiResponse::responseError(ErrorCode::AUTH_INVALID_TOKEN,
+                401);
         }
 
         $response->headers->set('Authorization', 'Bearer ' . $newToken);

@@ -11,7 +11,7 @@
 |
 */
 Route::group(['middleware' => 'api'], function () {
-    Route::group(['middleware' => ['guest', 'throttle:5,1']], function () {
+    Route::group(['middleware' => ['guest', 'throttle:10,1']], function () {
         Route::post('auth', 'AuthController@login');
     });
 

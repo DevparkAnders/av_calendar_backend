@@ -2,26 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
+use App\Helpers\ErrorCode;
 use App\Http\Requests\AuthLogin;
-use App\Services\AuthService;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Response;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\JWTAuth;
 
 class AuthController extends Controller
 {
     /**
-     * @var AuthService
+     * @var JWTAuth
      */
-    protected $service;
+    protected $auth;
 
     /**
-     * AuthController constructor.
-     *
-     * @param AuthService $service
+     * @var Guard
      */
-    public function __construct(AuthService $service)
+    protected $guard;
+
+    public function __construct(JWTAuth $auth, Guard $guard)
     {
-        $this->service = $service;
+        $this->auth = $auth;
+        $this->guard = $guard;
     }
 
     /**
@@ -33,11 +37,29 @@ class AuthController extends Controller
      */
     public function login(AuthLogin $request)
     {
-        list($user, $token) = $this->service->login($request);
+        // we allow to log in only users that are not deleted
+        $credentials = array_merge(
+            $request->only('email', 'password'),
+            ['deleted' => 0]);
 
-        return response()->api(['item' => $user], 200,
-            ['Authorization' => 'Bearer ' . $token]
-        );
+        // invalid user
+        if (!$this->guard->attempt($credentials)) {
+            return ApiResponse::responseError(ErrorCode::AUTH_INVALID_LOGIN_DATA,
+                401);
+        }
+
+        // get user
+        $user = $this->guard->user();
+
+        // create user token
+        try {
+            $token = $this->auth->fromUser($user);
+        } catch (JWTException $e) {
+            return ApiResponse::responseError(ErrorCode::AUTH_CANNOT_CREATE_TOKEN,
+                500);
+        }
+
+        return ApiResponse::responseOk(['token' => $token]);
     }
 
     /**
@@ -47,8 +69,8 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        $this->service->logout();
+        $this->auth->invalidate();
 
-        return response()->api([], 204);
+        return ApiResponse::responseOk(null, 204);
     }
 }
