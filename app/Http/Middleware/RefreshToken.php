@@ -23,17 +23,12 @@ class RefreshToken
     {
         $response = $next($request);
 
-        try {
-            $newToken = JWTAuth::setRequest($request)->parseToken()->refresh();
-        } catch (TokenExpiredException $e) {
-            return ApiResponse::responseError(ErrorCode::AUTH_EXPIRED_TOKEN,
-                400);
-        } catch (\Exception $e) {
-            return ApiResponse::responseError(ErrorCode::AUTH_INVALID_TOKEN,
-                401);
+        // if we refreshed token in Authenticate middleware, we attach to
+        // response same header that we put in request
+        if ($request->header('JWTRefreshed', null) == 1) {
+            $response->headers->set('Authorization',
+                $request->header('Authorization'));
         }
-
-        $response->headers->set('Authorization', 'Bearer ' . $newToken);
 
         return $response;
     }
