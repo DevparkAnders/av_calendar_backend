@@ -11,11 +11,11 @@
 |
 */
 Route::group(['middleware' => 'api'], function () {
-    Route::group(['middleware' => ['guest', 'throttle:10,1']], function () {
+    Route::group(['middleware' => ['throttle:5,1', 'guest']], function () {
         Route::post('auth', 'AuthController@login');
     });
 
-    Route::group(['middleware' => 'auth'], function () {
+    Route::group(['middleware' => ['throttle:60,1', 'auth']], function () {
         Route::delete('auth', 'AuthController@logout');
 
         Route::group(['middleware' => 'refresh.token'], function () {
