@@ -26,7 +26,7 @@ class Authenticate
 
         try {
             /** @var User $user */
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = JWTAuth::setRequest($request)->parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
             $tokenExpired = true;
         } catch (\Exception $e) {

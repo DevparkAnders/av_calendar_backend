@@ -22,7 +22,7 @@ class VerifyIfAuthenticated
     {
         $user = null;
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = JWTAuth::setRequest($request)->parseToken()->authenticate();
         } catch (\Exception $e) {
             // we don't care about exceptions in this place
         }
