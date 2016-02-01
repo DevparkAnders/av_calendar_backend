@@ -24,7 +24,7 @@ class Authenticate
     {
         try {
             /** @var User $user */
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = JWTAuth::setRequest($request)->parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
             return ApiResponse::responseError(ErrorCode::AUTH_EXPIRED_TOKEN,
                 400);
