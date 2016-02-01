@@ -1,7 +1,7 @@
 <?php
 
 $finder = Symfony\CS\Finder\DefaultFinder::create()
-    ->in([__DIR__ . '/app', __DIR__ . '/config']);
+    ->in([__DIR__ . '/app', __DIR__ . '/config', __DIR__ . '/tests']);
 
 return Symfony\CS\Config\Config::create()
     ->level(Symfony\CS\FixerInterface::PSR2_LEVEL)
