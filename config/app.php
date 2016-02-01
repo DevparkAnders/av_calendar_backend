@@ -108,7 +108,12 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'single'),
+    'log' => env('APP_LOG', 'daily'),
+    
+    /*
+     * Number of files for daily logging
+     */
+    'log_max_files' => 31,
 
     /*
     |--------------------------------------------------------------------------
