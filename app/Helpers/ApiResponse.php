@@ -50,6 +50,7 @@ class ApiResponse
             // @todo transform not used yet
             //'data' => self::transform($data),
             'data' => $data,
+            'exec_time' => self::getExecutionTime(),
         ];
 
         return new JsonResponse($json, $code, $headers, $options);
