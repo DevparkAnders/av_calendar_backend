@@ -82,7 +82,7 @@ class AuthControllerTest extends \TestCase
 
     public function testLogout_whenNotLoggedIn()
     {
-        $this->createUser(0);
+        $this->createUser();
         $this->delete('/auth')
             ->seeStatusCode(401)
             ->seeJsonContains(['code' => ErrorCode::AUTH_INVALID_TOKEN])
@@ -91,7 +91,7 @@ class AuthControllerTest extends \TestCase
     
     public function testLogout_whenLoggedIn()
     {
-        $this->createUser(0);
+        $this->createUser();
         $token = JWTAuth::fromUser($this->user);
 
         $this->delete('/auth', [], ['Authorization' => 'Bearer ' . $token])
