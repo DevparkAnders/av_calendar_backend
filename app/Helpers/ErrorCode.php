@@ -15,4 +15,9 @@ class ErrorCode
     const AUTH_EXPIRED_TOKEN = 'auth.expired_token';
     const AUTH_USER_NOT_FOUND = 'auth.user_not_found';
     const AUTH_ALREADY_LOGGED = 'auth.user_already_logged';
+
+    // PASSWORD
+    const PASSWORD_NO_USER_FOUND = 'password.no_user_found';
+    const PASSWORD_INVALID_PASSWORD = 'password.invalid_password';
+    const PASSWORD_INVALID_TOKEN = 'password.invalid_token';
 }
