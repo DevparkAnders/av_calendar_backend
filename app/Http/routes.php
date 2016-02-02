@@ -13,6 +13,9 @@
 Route::group(['middleware' => 'api'], function () {
     Route::group(['middleware' => ['throttle:5,1', 'guest']], function () {
         Route::post('auth', 'AuthController@login');
+
+        Route::post('password/reset', 'PasswordController@sendResetLinkEmail');
+        Route::put('password/reset', 'PasswordController@reset');
     });
 
     Route::group(['middleware' => ['throttle:60,1', 'auth']], function () {

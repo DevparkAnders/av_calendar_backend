@@ -17,7 +17,8 @@
         "symfony/css-selector": "2.8.*|3.0.*",
         "symfony/dom-crawler": "2.8.*|3.0.*",
         "barryvdh/laravel-ide-helper": "^2.1",        
-        "mnabialek/laravel-sql-logger": "dev-develop"        
+        "mnabialek/laravel-sql-logger": "dev-develop",
+        "guzzlehttp/guzzle": "6.*"        
     },
     "autoload": {
         "classmap": [
@@ -30,7 +31,10 @@
     "autoload-dev": {
         "classmap": [
             "tests/TestCase.php"
-        ]
+        ],
+        "psr-4": {
+            "Tests\\": "tests/"
+        }        
     },
     "scripts": {
         "post-root-package-install": [

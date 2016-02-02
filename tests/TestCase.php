@@ -1,7 +1,10 @@
 <?php
 
+use Tests\Helpers\CreateUser;
+
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
+    use CreateUser;
     /**
      * The base URL to use while testing the application.
      *
