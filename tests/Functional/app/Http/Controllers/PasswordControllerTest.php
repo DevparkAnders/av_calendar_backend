@@ -5,7 +5,6 @@ namespace Tests\Functional\App\Http\Controllers;
 use App\Helpers\ErrorCode;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Mockery;
 use JWTAuth;
 use Tests\Helpers\MailTrap;
 
