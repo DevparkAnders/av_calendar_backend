@@ -15,14 +15,9 @@ class PasswordControllerTest extends \TestCase
 
     protected $testUrl = 'http://example.com/:token/?email=:email';
 
-    public function setUp()
-    {
-        parent::setUp();
-        $this->cleanEmails();
-    }
-
     public function testSendResetEmail_withoutData()
     {
+        $this->cleanEmails();
         $this->createUser();
         $this->post('/password/reset')->seeStatusCode(422)
             ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
@@ -39,6 +34,7 @@ class PasswordControllerTest extends \TestCase
 
     public function testSendResetEmail_withInvalidEmail()
     {
+        $this->cleanEmails();
         $this->createUser();
         $this->post('/password/reset', [
             'email' => $this->userEmail . 'xxx',
@@ -53,6 +49,7 @@ class PasswordControllerTest extends \TestCase
 
     public function testSendResetEmail_withValidEmail()
     {
+        $this->cleanEmails();
         $this->createUser();
 
         $this->post('/password/reset', [
