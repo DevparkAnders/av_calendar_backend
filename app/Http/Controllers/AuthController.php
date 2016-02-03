@@ -59,7 +59,7 @@ class AuthController extends Controller
                 500);
         }
 
-        return ApiResponse::responseOk(['token' => $token]);
+        return ApiResponse::responseOk(['token' => $token], 201);
     }
 
     /**
@@ -71,6 +71,6 @@ class AuthController extends Controller
     {
         $this->auth->invalidate();
 
-        return ApiResponse::responseOk(null, 204);
+        return ApiResponse::responseOk([], 204);
     }
 }

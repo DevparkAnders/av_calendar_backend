@@ -30,7 +30,7 @@ class PasswordController extends Controller
         // return valid response depending on Password broker response
         switch ($response) {
             case Password::RESET_LINK_SENT:
-                return ApiResponse::responseOk();
+                return ApiResponse::responseOk([], 201);
 
             case Password::INVALID_USER:
             default:
