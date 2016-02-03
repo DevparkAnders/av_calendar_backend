@@ -48,5 +48,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\VerifyIfAuthenticated::class,
         'throttle' => \App\Http\Middleware\ThrottleRequests::class,
         'refresh.token' => \App\Http\Middleware\RefreshToken::class,
+        'authorize' => \App\Http\Middleware\Authorize::class,
     ];
 }
