@@ -15,8 +15,6 @@ produces:
 
 # will be prefixed to all paths
 basePath: /
-produces:
-  - application/json
 paths:
   /auth:
     post:
