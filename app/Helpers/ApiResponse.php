@@ -41,7 +41,7 @@ class ApiResponse
      * @return \Illuminate\Http\JsonResponse
      */
     public static function responseOk(
-        $data = null,
+        $data = [],
         $code = 200,
         $headers = [],
         $options = 0
@@ -103,9 +103,9 @@ class ApiResponse
      */
     private static function transform($data)
     {
-        if ($data instanceof LengthAwarePaginator) {
-            return json_decode($data->toJson(), true);
-        }
+        //        if ($data instanceof LengthAwarePaginator) {
+//            return json_decode($data->toJson(), true);
+//        }
 
         $fractal = new Manager();
 

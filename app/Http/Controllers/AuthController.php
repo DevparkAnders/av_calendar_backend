@@ -71,6 +71,6 @@ class AuthController extends Controller
     {
         $this->auth->invalidate();
 
-        return ApiResponse::responseOk(null, 204);
+        return ApiResponse::responseOk([], 204);
     }
 }

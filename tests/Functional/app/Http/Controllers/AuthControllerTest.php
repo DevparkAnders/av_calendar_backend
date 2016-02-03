@@ -61,7 +61,7 @@ class AuthControllerTest extends \TestCase
         ];
 
         $this->post('/auth', $data)
-            ->seeStatusCode(200)
+            ->seeStatusCode(201)
             ->seeJsonStructure(['data' => ['token']])
             ->isJson();
 
