@@ -55,7 +55,7 @@ class PasswordControllerTest extends \TestCase
         $this->post('/password/reset', [
             'email' => $this->userEmail,
             'url' => $this->testUrl,
-        ])->seeStatusCode(200);
+        ])->seeStatusCode(201);
 
         $token = \DB::table('password_resets')->first()->token;
 
