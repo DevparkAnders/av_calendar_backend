@@ -1,10 +1,10 @@
 swagger: '2.0'
 info:
   title: Authorization
-  description: This section describes authorization methods - log in (to get **token**) and log out (to remove **token**). All API calls except Authorization itself  (if not stated otherwise) will require sending authorization token (see `POST /auth` for details) .
+  description: This section describes authorization methods - log in (to get **token**) and log out (to remove **token**). All API calls except Authorization itself  (if not stated otherwise) will require sending authorization token (see `POST /auth` for details).
   version: "1.0.0"
 # the domain of the service
-host: crm.app
+host: cep.app
 # array of all schemes that your API supports
 schemes:
   - http
