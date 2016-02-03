@@ -47,7 +47,77 @@ paths:
         401:
           description: User has no access to display this page. As code you will get `general.no_action_permission`
           schema: 
-              $ref: "#/definitions/ErrorResponse"              
+              $ref: "#/definitions/ErrorResponse"     
+  /availabilities/{userId}/{day}:                       
+    get:
+      summary: Get user availability for selected day
+      description: |
+          Display user availability for selected user in selected day
+      tags:
+        - User availability         
+      parameters:
+        - name: userId
+          in: path
+          description: User id
+          required: true
+          type: number
+          format: int
+        - name: day
+          in: path
+          description: Date in format `YYYY-mm-dd`.
+          required: true
+          type: string
+      responses:
+        200:
+          description: List of user availabilities
+          schema: 
+              $ref: "#/definitions/UserAvailabilitiesResponse"
+        422:
+          description: Validation error. As code you will get `general.validation_failed`
+          schema: 
+              $ref: "#/definitions/ErrorResponse"
+        401:
+          description: User has no access to display this page. As code you will get `general.no_action_permission`
+          schema: 
+              $ref: "#/definitions/ErrorResponse" 
+    post:
+      summary: Set user availability for selected day
+      description: |
+          Set user availability for selected user in selected day. This action will remove all user availability first and then will set it again based on given data
+      tags:
+        - User availability         
+      parameters:
+        - name: userId
+          in: path
+          description: User id
+          required: true
+          type: number
+          format: int
+        - name: day
+          in: path
+          description: Date in format `YYYY-mm-dd`.
+          required: true
+          type: string
+        - name: availabilities
+          in:  formData
+          type: array
+          description: User availabilities. If you want to remove all user availabilities, send it as empty array
+          items: 
+            $ref: "#/definitions/UserDayAvailability"
+          
+      responses:
+        201:
+          description: User availabilities successfully saved
+          schema: 
+              $ref: "#/definitions/UserAvailabilitiesResponse"
+        422:
+          description: Validation error. As code you will get `general.validation_failed`
+          schema: 
+              $ref: "#/definitions/ErrorResponse"
+        401:
+          description: User has no access to display this page. As code you will get `general.no_action_permission`
+          schema: 
+              $ref: "#/definitions/ErrorResponse"                           
         
                       
 definitions:
@@ -154,6 +224,22 @@ definitions:
         type: string
         description: Optional description for this entry
         
+        
+  UserAvailabilitiesResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          availabilities:
+            type: array
+            description: Users that have any availability entries in selected period of dates
+            items: 
+              $ref: "#/definitions/UserDayAvailability" 
+      exec_time:
+        type: number
+        format: float
+        description: API execution time       
         
   ErrorResponse:
     type: object
