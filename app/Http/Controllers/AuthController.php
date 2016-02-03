@@ -59,7 +59,7 @@ class AuthController extends Controller
                 500);
         }
 
-        return ApiResponse::responseOk(['token' => $token]);
+        return ApiResponse::responseOk(['token' => $token], 201);
     }
 
     /**
