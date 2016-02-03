@@ -95,16 +95,20 @@ definitions:
             type: string
             description: Token          
       exec_time:
-        type: float
+        type: number
+        format: float
         description: API execution time
   SuccessAuthDeleteResponse:
     type: object
     properties:
       data:
-        type: 'null'
-        description: It will be set to `null`
+        type: array
+        description: It will be empty
+        items:
+          type: string
       exec_time:
-        type: float
+        type: number
+        format: float
         description: API execution time
   ErrorResponse:
     type: object
@@ -113,8 +117,11 @@ definitions:
         type: string
         description: Error code.
       fields:
-        type: string
-        description: Error messages for each field
+        type: array
+        description: Error messages for each field. As keys you will get field names and as values you will get error messages for those fields
+        items: 
+          type: string
       exec_time:
-        type: float
+        type: number
+        format: float 
         description: API execution time
