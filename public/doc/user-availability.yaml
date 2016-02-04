@@ -221,7 +221,6 @@ definitions:
         type: number
         format: int
         description: Whether user is available in given time (or date if times are empty) or not
-        required: true
       description:
         type: string
         description: Optional description for this entry
@@ -235,9 +234,9 @@ definitions:
         properties:
           availabilities:
             type: array
-            description: Users that have any availability entries in selected period of dates
-            items: 
-              $ref: "#/definitions/UserDayAvailability" 
+            description: User availabilities
+            items:
+              $ref: "#/definitions/UserDayAvailability"
       exec_time:
         type: number
         format: float
