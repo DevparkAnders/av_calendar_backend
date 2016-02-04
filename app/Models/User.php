@@ -74,4 +74,26 @@ class User extends Model implements
     {
         return (bool)$this->deleted;
     }
+
+    /**
+     * Verify if user is admin
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->hasRole(RoleType::ADMIN);
+    }
+
+    /**
+     * Verify if user has given role
+     *
+     * @param string $roleType
+     *
+     * @return bool
+     */
+    public function hasRole($roleType)
+    {
+        return ($this->role && $this->role->name == $roleType);
+    }
 }

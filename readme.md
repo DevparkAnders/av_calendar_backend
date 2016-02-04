@@ -36,3 +36,14 @@ In order to follow code standards, you should use PSR-2, install [PHP CS Fixer](
     
     to generate random `JWT_SECRET` token in your `.env` file
 
+### Running tests
+
+In order to run `phpunit` tests you should prepare a few things.
+
+1. You need to create separate database connection and run all migrations into this database and then run seeding. 
+
+2. You need to fill this database connection settings in `.env` file in `TESTING` section
+
+3. You should make sure that in your `.env` file `MAIL_HOST` is set to `mailtrap.io` and all e-mail settings are filled correctly
+
+4. Now you need to fill in `MAILTRAP_API_TOKEN` and `MAILTRAP_API_INBOX` based on your mailtrap account. To do that, you should log in into your `mailtrap.io` account, and go to `https://mailtrap.io/public_api` where you have your API key. To get your API inbox you need to go to `https://mailtrap.io/inboxes` and when you click your inbox just use id that you will find in url.

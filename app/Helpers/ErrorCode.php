@@ -7,6 +7,7 @@ class ErrorCode
     // GENERAL
     const VALIDATION_FAILED = 'general.validation_failed';
     const REQUESTS_RATE_EXCEEDED = 'general.request_rate_exceeded';
+    const NO_PERMISSION = 'general.no_action_permission';
     
     // AUTH
     const AUTH_INVALID_LOGIN_DATA = 'auth.invalid_login_data';
