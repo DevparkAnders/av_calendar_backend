@@ -99,11 +99,12 @@ paths:
           required: true
           type: string
         - name: availabilities
-          in:  formData
-          type: array
-          description: User availabilities. If you want to remove all user availabilities, send it as empty array
-          items: 
-            $ref: "#/definitions/UserDayAvailability"
+          in: body
+          schema: 
+            type: array
+            description: User availabilities. If you want to remove all user availabilities, send it as empty array
+            items: 
+              $ref: "#/definitions/UserDayAvailability"
           
       responses:
         201:
@@ -220,6 +221,7 @@ definitions:
         type: number
         format: int
         description: Whether user is available in given time (or date if times are empty) or not
+        required: true
       description:
         type: string
         description: Optional description for this entry
