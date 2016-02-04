@@ -2,6 +2,7 @@
 
 namespace Tests\Helpers;
 
+use App\Models\Role;
 use App\Models\User;
 
 trait CreateUser
@@ -16,14 +17,23 @@ trait CreateUser
     /**
      * Testing user password
      *
-     * @var
+     * @var string
      */
     protected $userPassword;
+
+    /**
+     * User
+     * 
+     * @var User|null
+     */
+    protected $user;
 
     /**
      * Creates user for tests
      *
      * @param int $deleted
+     *
+     * @return $this
      */
     protected function createUser($deleted = 0)
     {
@@ -35,5 +45,22 @@ trait CreateUser
             'password' => bcrypt($this->userPassword),
             'deleted' => $deleted,
         ]);
+
+        return $this;
+    }
+
+    /**
+     * Sets user given role
+     *
+     * @param string $roleType
+     *
+     * @return $this
+     */
+    protected function setRole($roleType)
+    {
+        $this->user->role_id = Role::where('name', $roleType)->first()->id;
+        $this->user->save();
+
+        return $this;
     }
 }

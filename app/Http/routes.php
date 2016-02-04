@@ -21,11 +21,14 @@ Route::group(['middleware' => 'api'], function () {
     Route::group(['middleware' => ['throttle:60,1', 'auth']], function () {
         Route::delete('auth', 'AuthController@logout');
 
-        Route::group(['middleware' => 'refresh.token'], function () {
-            Route::get('/', function () {
-                // @todo this is test route only - will be removed later
-                return response()->api(['item' => auth()->user()]);
-            });
+        Route::group(['middleware' => ['refresh.token', 'authorize']], function () {
+            // roles
+            Route::get('roles', 'RoleController@index');
+            // users
+//            Route::get('users', 'UserController@index');
+//            Route::post('users', 'UserController@store');
+            
+            
         });
     });
 });
