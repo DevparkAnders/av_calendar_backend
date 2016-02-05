@@ -164,7 +164,7 @@ definitions:
       last_name:   
         type: string
         description: User last name
-      last_name:   
+      role_id:   
         type: number
         format: int
         description: User role id
