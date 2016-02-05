@@ -23,4 +23,14 @@ class RoleType
             self::CLIENT,
         ];
     }
+
+    /**
+     * Get default user role
+     *
+     * @return string
+     */
+    public static function default()
+    {
+        return self::CLIENT;
+    }
 }

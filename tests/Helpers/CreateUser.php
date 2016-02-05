@@ -42,7 +42,7 @@ trait CreateUser
 
         $this->user = factory(User::class, 1)->create([
             'email' => $this->userEmail,
-            'password' => bcrypt($this->userPassword),
+            'password' => $this->userPassword,
             'deleted' => $deleted,
         ]);
 
