@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "39f810c7c3fb88248cdca2ce2718f440",
-    "content-hash": "01daa0d86c6bde61399c4d72d95655f3",
+    "hash": "2bb92813e2c698e027732e49fe4932c9",
+    "content-hash": "ba72c1c229841e25c56bd53a72c477d9",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -919,6 +919,42 @@
                 "storage"
             ],
             "time": "2015-12-19 20:16:43"
+        },
+        {
+            "name": "mnabialek/laravel-simple-modules",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mnabialek/laravel-simple-modules.git",
+                "reference": "c1a4f329263e7848f4ae5267ef2906037ddd33e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mnabialek/laravel-simple-modules/zipball/c1a4f329263e7848f4ae5267ef2906037ddd33e8",
+                "reference": "c1a4f329263e7848f4ae5267ef2906037ddd33e8",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mnabialek\\LaravelSimpleModules\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mnabialek",
+                    "email": "gitre@nabialek.org"
+                }
+            ],
+            "description": "Allows creating Laravel modules for better project structure",
+            "time": "2016-01-07 23:05:24"
         },
         {
             "name": "monolog/monolog",
@@ -3993,8 +4029,9 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
+        "mnabialek/laravel-simple-modules": 20,
         "mnabialek/laravel-sql-logger": 20
     },
     "prefer-stable": false,

@@ -31,3 +31,5 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
         'deleted' => $faker->boolean(),
     ];
 });
+
+SimpleModule::loadFactories($factory);
