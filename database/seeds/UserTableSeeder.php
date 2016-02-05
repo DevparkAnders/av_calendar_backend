@@ -27,7 +27,7 @@ class UserTableSeeder extends Seeder
             // creating admin user
             $user = new User();
             $user->email = $adminEmail;
-            $user->password = bcrypt($adminPassword);
+            $user->password = $adminPassword;
 
             $user->role_id =
                 $roles->where('name', RoleType::ADMIN)->first()->id;
@@ -50,7 +50,7 @@ class UserTableSeeder extends Seeder
 
             $u = new User();
             $u->email = $user['email'];
-            $u->password = bcrypt($user['password']);
+            $u->password = $user['password'];
             $role = $roles->where('name', $user['role'])->first();
             if (!$role) {
                 throw new Exception("Invalid role '{$user['role']}' given for user {$u->email}");

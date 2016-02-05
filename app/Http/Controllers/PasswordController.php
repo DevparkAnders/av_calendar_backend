@@ -54,7 +54,7 @@ class PasswordController extends Controller
         // try to change user password 
         $response = Password::broker()
             ->reset($credentials, function ($user, $password) {
-                $user->password = bcrypt($password);
+                $user->password = $password;
                 $user->save();
             });
 
