@@ -13,7 +13,7 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        \App\Events\UserWasCreated::class => [
+        \App\Modules\User\Events\UserWasCreated::class => [
        //     \App\Services\NotificationService::class,
         ],
     ];

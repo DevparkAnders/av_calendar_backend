@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\User\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 
 class RoleController extends Controller

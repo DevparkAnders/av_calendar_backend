@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Modules\User\Http\Requests;
+
+use App\Http\Requests\Request;
 
 class CreateUser extends Request
 {

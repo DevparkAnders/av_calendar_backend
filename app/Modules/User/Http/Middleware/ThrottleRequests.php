@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Modules\User\Http\Middleware;
 
 use App\Helpers\ApiResponse;
 use App\Helpers\ErrorCode;
 use Closure;
-use Illuminate\Http\Response;
 use Illuminate\Cache\RateLimiter;
 
 /**

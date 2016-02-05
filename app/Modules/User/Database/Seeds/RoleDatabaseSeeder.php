@@ -1,15 +1,15 @@
 <?php
 
+namespace App\Modules\User\Database\Seeds;
+
 use App\Models\Role;
 use App\Models\RoleType;
 use Illuminate\Database\Seeder;
 
-class RoleTableSeeder extends Seeder
+class RoleDatabaseSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
-     *
-     * @return void
+     * Run seeds for User
      */
     public function run()
     {

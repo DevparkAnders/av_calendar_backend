@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\User\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Helpers\ErrorCode;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthLogin;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Response;

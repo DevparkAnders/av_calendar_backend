@@ -1,19 +1,22 @@
 <?php
 
+namespace App\Modules\User\Database\Seeds;
+
 use App\Models\Role;
 use App\Models\RoleType;
 use App\Models\User;
+use Exception;
 use Illuminate\Database\Seeder;
 
-class UserTableSeeder extends Seeder
+class UserDatabaseSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
-     *
-     * @return void
+     * Run seeds for User
      */
     public function run()
     {
+        $this->call(RoleDatabaseSeeder::class);
+        
         $roles = Role::all();
 
         if (!User::count()) {

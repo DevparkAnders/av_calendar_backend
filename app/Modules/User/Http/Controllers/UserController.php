@@ -1,13 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\User\Http\Controllers;
 
-use App\Events\UserWasCreated;
+
 use App\Helpers\ApiResponse;
-use App\Http\Requests\CreateUser;
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\RoleType;
 use App\Models\User;
+use App\Modules\User\Events\UserWasCreated;
+use App\Modules\User\Http\Requests\CreateUser;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Events\Dispatcher as Event;
 
@@ -28,6 +31,7 @@ class UserController extends Controller
      *
      * @param CreateUser $request
      * @param Event $event
+     * @param Guard $auth
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -52,9 +56,9 @@ class UserController extends Controller
 
         // fire user created event
         $event->fire(new UserWasCreated($user,
-            array_merge($request->only('send_user_notification', 'url',[
-                'creator_id' => auth()->check() ? auth()->user->id : $user->id
-            ]))));
+            array_merge($request->only('send_user_notification', 'url'), [
+                'creator_id' => $auth->check() ? $auth->user()->id : $user->id,
+            ])));
 
         return ApiResponse::responseOk($user, 201);
     }

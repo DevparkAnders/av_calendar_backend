@@ -138,7 +138,7 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_withData()
     {
-        $this->expectsEvents(\App\Events\UserWasCreated::class);
+        $this->expectsEvents(\App\Modules\User\Events\UserWasCreated::class);
 
         $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
@@ -177,7 +177,7 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_withoutPasswordAndNotification()
     {
-        $this->expectsEvents(\App\Events\UserWasCreated::class);
+        $this->expectsEvents(\App\Modules\User\Events\UserWasCreated::class);
 
         $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
@@ -208,7 +208,7 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_whenNotLogged()
     {
-        $this->expectsEvents(\App\Events\UserWasCreated::class);
+        $this->expectsEvents(\App\Modules\User\Events\UserWasCreated::class);
 
         $this->verifyUserCreationForNonAdminUser();
     }
@@ -237,7 +237,7 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_whenLoggedAsNonAdmin()
     {
-        $this->expectsEvents(\App\Events\UserWasCreated::class);
+        $this->expectsEvents(\App\Modules\User\Events\UserWasCreated::class);
         $this->createUser()->setRole(RoleType::CLIENT);
 
         $this->verifyUserCreationForNonAdminUser();

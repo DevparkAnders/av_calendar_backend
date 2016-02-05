@@ -8,13 +8,8 @@ use Illuminate\Http\Response;
 use {namespace}\{moduleNamespace}\Http\Requests\{class}Request;
 use {namespace}\{moduleNamespace}\Services\{class}Service;
 
-class {class} extends Controller
+class {class}Controller extends Controller
 {
-    /**
-     * @var {class}Repository
-     */
-    protected $repo;
-
     /**
      * @var {class}Service
      */
@@ -23,12 +18,10 @@ class {class} extends Controller
     /**
      * {class}Controller constructor.
      *
-     * @param {class}Repository $repo
      * @param {class}Service $service
      */
-    public function __construct({class}Repository $repo, {class}Service $service)
+    public function __construct({class}Service $service)
     {
-        $this->repo = $repo;
         $this->service = $service;
     }
 
