@@ -8,5 +8,6 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'last_name' => $faker->lastName,
         'role_id' => $faker->randomElement(\App\Models\Role::all()->pluck('id')
             ->all()),
+        'deleted' => 0,
     ];
 });
