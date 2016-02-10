@@ -2,9 +2,10 @@
 
 namespace App\Modules\CalendarAvailability\Services;
 
+use App\Modules\CalendarAvailability\Contracts\CalendarAvailabilityFormatter as CalendarAvailabilityFormatterContract;
 use Illuminate\Database\Eloquent\Collection;
 
-class CalendarAvailabilityFormatter
+class CalendarAvailabilityFormatter implements CalendarAvailabilityFormatterContract
 {
 
     /**

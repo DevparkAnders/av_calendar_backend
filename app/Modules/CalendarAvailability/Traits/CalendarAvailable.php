@@ -12,7 +12,7 @@ trait CalendarAvailable
      *
      * @var string
      */
-    static $calendarObjectIdColumn = 'user_id';
+    protected static $calendarObjectIdColumn = 'user_id';
 
     /**
      * Get availabilities for selected objects in selected days

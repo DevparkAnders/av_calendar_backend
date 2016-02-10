@@ -10,8 +10,8 @@ use App\Models\UserAvailability;
 use App\Modules\CalendarAvailability\Http\Requests\CalendarAvailabilityIndex;
 use App\Modules\CalendarAvailability\Http\Requests\CalendarAvailabilityShow;
 use App\Modules\CalendarAvailability\Http\Requests\CalendarAvailabilityStore;
-use App\Modules\CalendarAvailability\Services\CalendarAvailability as CalendarService;
-use App\Modules\CalendarAvailability\Services\CalendarAvailabilityFormatter;
+use App\Modules\CalendarAvailability\Contracts\CalendarAvailability as CalendarService;
+use App\Modules\CalendarAvailability\Contracts\CalendarAvailabilityFormatter;
 use Illuminate\Http\Response;
 
 class CalendarAvailabilityController extends Controller

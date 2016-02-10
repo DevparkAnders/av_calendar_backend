@@ -5,8 +5,9 @@ namespace App\Modules\CalendarAvailability\Services;
 use App\Models\User;
 use App\Models\UserAvailability;
 use Carbon\Carbon;
+use App\Modules\CalendarAvailability\Contracts\CalendarAvailability as CalendarAvailabilityContract;
 
-class CalendarAvailability
+class CalendarAvailability implements CalendarAvailabilityContract
 {
     /**
      * @var User
