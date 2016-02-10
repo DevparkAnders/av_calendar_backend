@@ -26,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local', 'testing')) {
             $this->registerLocalProviders();
         }
+
+        $this->bindImplementationToInterfaces();
     }
 
     /**
@@ -36,5 +38,16 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         $this->app->register(\Mnabialek\LaravelSqlLogger\Providers\ServiceProvider::class);
+    }
+
+    /**
+     * Bind interfaces implementations
+     */
+    protected function bindImplementationToInterfaces()
+    {
+        $this->app->bind(\App\Modules\CalendarAvailability\Contracts\CalendarAvailability::class,
+            \App\Modules\CalendarAvailability\Services\CalendarAvailability::class);
+        $this->app->bind(\App\Modules\CalendarAvailability\Contracts\CalendarAvailabilityFormatter::class,
+            \App\Modules\CalendarAvailability\Services\CalendarAvailabilityFormatter::class);
     }
 }

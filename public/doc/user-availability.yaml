@@ -16,11 +16,11 @@ produces:
 # will be prefixed to all paths
 basePath: /
 paths:
-  /availabilities:
+  /users/availabilities:
     get:
       summary: Display user availability in selected period
       description: |
-        Display user availability in selected period of time. For admin availability of all users will be returned but for other users it will be limited to users that are assigned to same projects
+        Display user availability in selected period of time. For admin availability of all users (except deleted) will be returned but for other users it will be limited to users that are assigned to same projects (and are not deleted)
       tags:
         - User availability         
       parameters:
@@ -31,7 +31,7 @@ paths:
           type: string
         - name: limit
           in: query
-          description: Number of days to get (default is `10`). If provided it should be `>0` and `<31`
+          description: Number of days to get (default is `10`). If provided it should be `>0` and `<=31`
           required: false
           type: number
           format: int
@@ -48,7 +48,7 @@ paths:
           description: User has no access to display this page. As code you will get `general.no_action_permission`
           schema: 
               $ref: "#/definitions/ErrorResponse"     
-  /availabilities/{userId}/{day}:                       
+  /users/{userId}/availabilities/{day}:                       
     get:
       summary: Get user availability for selected day
       description: |
@@ -172,8 +172,7 @@ definitions:
         type: string
         description: User avatar
       deleted:
-        type: number
-        format: int
+        type: boolean
         description: Whether user has been deleted
       
   Day:
@@ -214,12 +213,11 @@ definitions:
       time_start:
         type: string
         description: Start time (can be null)
-      timestop:
+      time_stop:
         type: string
         description: Stop time (can be null)        
       available:
-        type: number
-        format: int
+        type: boolean
         description: Whether user is available in given time (or date if times are empty) or not
       description:
         type: string
@@ -230,13 +228,10 @@ definitions:
     type: object
     properties:
       data:
-        type: object
-        properties:
-          availabilities:
-            type: array
-            description: User availabilities
-            items:
-              $ref: "#/definitions/UserDayAvailability"
+        type: array
+        description: User availabilities
+        items:
+          $ref: "#/definitions/UserDayAvailability"
       exec_time:
         type: number
         format: float

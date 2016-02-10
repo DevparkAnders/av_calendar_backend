@@ -135,7 +135,7 @@ return [
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
-        Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
+        //Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
         Illuminate\Cookie\CookieServiceProvider::class,
         Illuminate\Database\DatabaseServiceProvider::class,
         Illuminate\Encryption\EncryptionServiceProvider::class,
@@ -166,6 +166,8 @@ return [
          * 3rd party providers 
          */
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        Mnabialek\LaravelSimpleModules\Providers\SimpleModules::class,
+        Mnabialek\LaravelSimpleModules\Providers\ConsoleSupport::class,
     ],
 
     /*
@@ -217,6 +219,7 @@ return [
          */
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'SimpleModule' => Mnabialek\LaravelSimpleModules\Facades\SimpleModule::class,
 
     ],
 

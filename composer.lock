@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "39f810c7c3fb88248cdca2ce2718f440",
-    "content-hash": "01daa0d86c6bde61399c4d72d95655f3",
+    "hash": "21f7cce26459f1ad93f7d17ab1698290",
+    "content-hash": "b153905d81fc4d98936db5eda48b2175",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -919,6 +919,105 @@
                 "storage"
             ],
             "time": "2015-12-19 20:16:43"
+        },
+        {
+            "name": "league/fractal",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/fractal.git",
+                "reference": "7c3e00f714419544faf39716b883081f785da4bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/7c3e00f714419544faf39716b883081f785da4bc",
+                "reference": "7c3e00f714419544faf39716b883081f785da4bc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "illuminate/contracts": "~5.0",
+                "mockery/mockery": "~0.9",
+                "pagerfanta/pagerfanta": "~1.0.0",
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~1.5",
+                "zendframework/zend-paginator": "~2.3"
+            },
+            "suggest": {
+                "illuminate/pagination": "The Illuminate Pagination component.",
+                "pagerfanta/pagerfanta": "Pagerfanta Paginator",
+                "zendframework/zend-paginator": "Zend Framework Paginator"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.13-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Fractal\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Phil Sturgeon",
+                    "email": "me@philsturgeon.uk",
+                    "homepage": "http://philsturgeon.uk/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Handle the output of complex data structures ready for API output.",
+            "homepage": "http://fractal.thephpleague.com/",
+            "keywords": [
+                "api",
+                "json",
+                "league",
+                "rest"
+            ],
+            "time": "2016-01-26 23:37:34"
+        },
+        {
+            "name": "mnabialek/laravel-simple-modules",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mnabialek/laravel-simple-modules.git",
+                "reference": "c1a4f329263e7848f4ae5267ef2906037ddd33e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mnabialek/laravel-simple-modules/zipball/efc68a6835e9fe20c3d3703de77163727ec9cd55",
+                "reference": "c1a4f329263e7848f4ae5267ef2906037ddd33e8",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mnabialek\\LaravelSimpleModules\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mnabialek",
+                    "email": "gitre@nabialek.org"
+                }
+            ],
+            "description": "Allows creating Laravel modules for better project structure",
+            "time": "2016-01-07 23:05:24"
         },
         {
             "name": "monolog/monolog",
@@ -3993,8 +4092,9 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
+        "mnabialek/laravel-simple-modules": 20,
         "mnabialek/laravel-sql-logger": 20
     },
     "prefer-stable": false,
