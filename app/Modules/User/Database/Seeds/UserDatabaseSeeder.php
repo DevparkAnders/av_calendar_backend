@@ -42,7 +42,7 @@ class UserDatabaseSeeder extends Seeder
         // here extra users table - we will create new ones from this table if
         // they don't exist (but we won't delete if any exists and are not
         // in this array present)
-        $users = config('app_users',[]);
+        $users = config('app_users', []);
 
         foreach ($users as $user) {
             $u = User::where('email', $user['email'])->first();

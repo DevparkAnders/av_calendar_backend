@@ -4,6 +4,7 @@ namespace Tests\Helpers;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 trait CreateUser
 {
@@ -23,7 +24,7 @@ trait CreateUser
 
     /**
      * User
-     * 
+     *
      * @var User|null
      */
     protected $user;
@@ -62,5 +63,50 @@ trait CreateUser
         $this->user->save();
 
         return $this;
+    }
+
+    /**
+     * Format single user into array
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    protected function formatUser(User $user)
+    {
+        $user = $user->toArray();
+        $user = array_intersect_key($user, array_flip([
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'role_id',
+            'avatar',
+            'deleted',
+        ]));
+
+        $user['deleted'] = (bool)$user['deleted'];
+        if (!isset($user['avatar'])) {
+            $user['avatar'] = '';
+        }
+
+        return $user;
+    }
+
+    /**
+     * Format collection of users into array
+     *
+     * @param Collection $users
+     *
+     * @return array
+     */
+    protected function formatUsers(Collection $users)
+    {
+        $result = [];
+        foreach ($users as $user) {
+            $result[] = $this->formatUser($user);
+        }
+
+        return $result;
     }
 }

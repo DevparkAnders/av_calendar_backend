@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Modules\User\Traits\Active;
 use App\Modules\User\Traits\Allowed;
 use App\Modules\User\Traits\Fillable;
 use App\Modules\User\Traits\Removeable;
@@ -19,8 +20,8 @@ class User extends Model implements
     CanResetPasswordContract
 {
     use Authenticatable, Authorizable, CanResetPassword;
-    
-    use Allowed, Roleable, Fillable, Removeable;
+
+    use Allowed, Roleable, Fillable, Removeable, Active;
 
     /**
      * The attributes that are mass assignable.
@@ -44,7 +45,7 @@ class User extends Model implements
      */
     protected $hidden = [
         'password',
-    ];    
+    ];
 
     // relationships
 

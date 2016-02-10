@@ -15,7 +15,7 @@ trait Roleable
     public function role()
     {
         return $this->belongsTo(Role::class);
-    }    
+    }
     
 
     /**

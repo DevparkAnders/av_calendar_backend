@@ -162,6 +162,7 @@ return [
      */
     'modules' => [
         'User' => ['active' => true, 'routes' => true,],
+        'CalendarAvailability' => ['active' => true, 'routes' => true,],
         // end of modules (don't remove this comment)
     ],
 

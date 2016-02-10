@@ -2,12 +2,28 @@
 
 namespace App\Models;
 
+use App\Modules\CalendarAvailability\Traits\CalendarAvailable;
+
 class UserAvailability extends Model
 {
+    use CalendarAvailable;
+    
     /**
      * {@inheritdoc}
      */
     protected $table = 'user_availability';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $fillable = [
+        'user_id',
+        'day',
+        'time_start',
+        'time_stop',
+        'available',
+        'description',
+    ];
 
     /**
      * {inheritdoc}

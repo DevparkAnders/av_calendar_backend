@@ -2,7 +2,6 @@
 
 namespace App\Modules\User\Http\Controllers;
 
-
 use App\Helpers\ApiResponse;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -53,6 +52,8 @@ class UserController extends Controller
 
         // create user
         $user = User::create($input);
+        // find created user in database (so we have all the fields)
+        $user = User::find($user->id);
 
         // fire user created event
         $event->fire(new UserWasCreated($user,

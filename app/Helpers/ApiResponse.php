@@ -3,15 +3,13 @@
 namespace App\Helpers;
 
 use Traversable;
-//use League\Fractal\Manager;
+use League\Fractal\Manager;
 use Illuminate\Support\Arr;
 use Illuminate\Http\JsonResponse;
-//use League\Fractal\Resource\Item;
-//use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+use League\Fractal\Resource\Collection;
 use Illuminate\Database\Eloquent\Model;
-//use App\Contracts\Resource;
 use Symfony\Component\HttpFoundation\Response;
-//use Illuminate\Contracts\Support\JsonableInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -47,9 +45,7 @@ class ApiResponse
         $options = 0
     ) {
         $json = [
-            // @todo transform not used yet
-            //'data' => self::transform($data),
-            'data' => $data,
+            'data' => self::transform($data),
             'exec_time' => self::getExecutionTime(),
         ];
 
@@ -123,6 +119,13 @@ class ApiResponse
                 $fractal->createData(new Collection($data, new $transformer()))
                     ->toArray();
         }
+        
+        // to transform also nested resources ['users' => [0 => User]]
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                $data[$k] = self::transform($v);
+            }
+        }
 
         return Arr::get($data, 'data', $data);
     }
@@ -137,7 +140,7 @@ class ApiResponse
 
     private static function isResource($data)
     {
-        return $data instanceof Resource || $data instanceof Model;
+        return $data instanceof Model;
     }
 
     private static function isCollection($data)

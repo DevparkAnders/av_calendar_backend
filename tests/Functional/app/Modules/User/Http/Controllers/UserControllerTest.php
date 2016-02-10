@@ -30,7 +30,7 @@ class UserControllerTest extends \TestCase
         $json = $this->decodeResponseJson();
         $responseUsers = $json['data'];
         $this->assertEquals($users->count(), count($responseUsers));
-        $this->assertEquals($users->toArray(), $responseUsers);
+        $this->assertEquals($this->formatUsers($users), $responseUsers);
     }
 
     public function testIndex_whenDeveloperWithoutProjects()
@@ -49,7 +49,7 @@ class UserControllerTest extends \TestCase
         $json = $this->decodeResponseJson();
         $responseUsers = $json['data'];
         $this->assertEquals(1, count($responseUsers));
-        $this->assertEquals($users->toArray(), $responseUsers);
+        $this->assertEquals($this->formatUsers($users), $responseUsers);
     }
 
     public function testIndex_whenDeveloperWithProjects()
@@ -118,7 +118,7 @@ class UserControllerTest extends \TestCase
         $json = $this->decodeResponseJson();
         $responseUsers = $json['data'];
         $this->assertEquals($users->count(), count($responseUsers));
-        $this->assertEquals($users->toArray(), $responseUsers);
+        $this->assertEquals($this->formatUsers($users), $responseUsers);
     }
 
     public function testStoreUser_whenNoData()
