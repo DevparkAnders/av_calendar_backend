@@ -61,7 +61,7 @@ class User extends Model implements
     public function role()
     {
         return $this->belongsTo(Role::class);
-    }    
+    }
 
     /**
      * User can be assigned to multiple projects

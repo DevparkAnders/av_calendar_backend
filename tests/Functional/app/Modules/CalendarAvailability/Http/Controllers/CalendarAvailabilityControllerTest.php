@@ -262,7 +262,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         // make sure the order in response is appropriate
         $json = $this->decodeResponseJson()['data'];
         $this->assertEquals($newAvailabilities[1], $json[0]);
-        $this->assertEquals($newAvailabilities[0], $json[1]);        
+        $this->assertEquals($newAvailabilities[0], $json[1]);
 
         // verify number of results in database
         $this->assertEquals(2, \DB::table('user_availability')
@@ -280,7 +280,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'user_id' => $this->user->id,
                 'day' => $today->format('Y-m-d'),
             ]));
-    }    
+    }
     
     public function testShow_whenUserDoesNotExists()
     {
@@ -371,7 +371,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         auth()->loginUsingId($this->user->id);
 
         list($newUsers, $today, $tomorrow, $availabilities) =
-            $this->prepareGetData();        
+            $this->prepareGetData();
 
         \DB::table('project_user')->insert([
             [

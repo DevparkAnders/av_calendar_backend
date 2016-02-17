@@ -61,7 +61,7 @@ return [
 
             App\Models\RoleType::CLIENT => [
                 'role.index',
-            ],            
+            ],
         ],
     ],
 
