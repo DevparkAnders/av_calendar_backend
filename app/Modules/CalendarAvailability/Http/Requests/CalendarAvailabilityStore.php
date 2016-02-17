@@ -25,7 +25,7 @@ class CalendarAvailabilityStore extends Request
         
         // non-admin users can add only own availabilities
         if (!auth()->user()->isAdmin()) {
-            $rules['user'][] = 'in:'.auth()->user()->id();
+            $rules['user'][] = 'in:'.auth()->user()->id;
         }
         
         return $rules;

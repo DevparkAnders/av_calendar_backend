@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Modules\CalendarAvailability\Http\Controllers\CalendarAvailabilityController;
 use App\Modules\User\Http\Controllers\RoleController;
 use App\Modules\User\Http\Controllers\UserController;
+use App\Policies\CalendarAvailabilityControllerPolicy;
 use App\Policies\RoleControllerPolicy;
 use App\Policies\UserControllerPolicy;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
@@ -19,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         UserController::class => UserControllerPolicy::class,
         RoleController::class => RoleControllerPolicy::class,
+        CalendarAvailabilityController::class => CalendarAvailabilityControllerPolicy::class,
     ];
 
     /**

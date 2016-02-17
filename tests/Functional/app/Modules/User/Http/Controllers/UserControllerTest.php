@@ -7,12 +7,10 @@ use App\Models\Role;
 use App\Models\RoleType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class UserControllerTest extends \TestCase
 {
     use DatabaseTransactions;
-    use WithoutMiddleware;
 
     public function testIndex_whenAdmin()
     {
@@ -123,7 +121,7 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_whenNoData()
     {
-        $this->createUser();
+        $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
         $this->post('/users')->seeStatusCode(422)
             ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
@@ -208,13 +206,14 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_whenNotLogged()
     {
-        $this->expectsEvents(\App\Modules\User\Events\UserWasCreated::class);
+        $this->doesntExpectEvents(\App\Modules\User\Events\UserWasCreated::class);
 
-        $this->verifyUserCreationForNonAdminUser();
+        $this->post('/users', [])->seeStatusCode(401);
     }
 
     public function testStoreUser_whenNotLoggedWithoutPassword()
     {
+        $this->withoutMiddleware();
         $data = factory(User::class, 1)->make()->toArray();
         $data['password'] = '';
         $data['first_name'] = '';
@@ -237,6 +236,7 @@ class UserControllerTest extends \TestCase
 
     public function testStoreUser_whenLoggedAsNonAdmin()
     {
+        $this->withoutMiddleware();
         $this->expectsEvents(\App\Modules\User\Events\UserWasCreated::class);
         $this->createUser()->setRole(RoleType::CLIENT);
 

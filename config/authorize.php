@@ -28,6 +28,9 @@ return [
             'role.index',
             'user.index',
             'user.store',
+            'calendar.index',
+            'calendar.store',
+            'calendar.show',
         ],
 
         /**
@@ -43,11 +46,17 @@ return [
             App\Models\RoleType::DEALER => [
                 'user.index',
                 'role.index',
+                'calendar.index',
+                'calendar.store',
+                'calendar.show',
             ],
 
             App\Models\RoleType::DEVELOPER => [
                 'user.index',
                 'role.index',
+                'calendar.index',
+                'calendar.store',
+                'calendar.show',
             ],
 
             App\Models\RoleType::CLIENT => [

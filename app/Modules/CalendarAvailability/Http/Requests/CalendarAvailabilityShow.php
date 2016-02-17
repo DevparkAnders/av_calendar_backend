@@ -18,12 +18,6 @@ class CalendarAvailabilityShow extends Request
             'user' => ['required'],
             'day' => ['required', 'date'],
         ];
-
-        // non-admin users can display only allowed users availabilities
-        if (!auth()->user()->isAdmin()) {
-            $rules['user'][] =
-                'in:' . implode(',', User::allowed()->pluck('id')->all());
-        }
         
         return $rules;
     }

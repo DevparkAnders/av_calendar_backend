@@ -7,12 +7,10 @@ use App\Models\RoleType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class CalendarAvailabilityControllerTest extends \TestCase
 {
     use DatabaseTransactions;
-    use WithoutMiddleware;
 
     public function testStore_withInvalidData()
     {
@@ -54,7 +52,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[0]['id'],
+                'user_id' => $newUsers[0]->id,
                 'day' => $today->format('Y-m-d'),
             ],
             [
@@ -62,7 +60,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[0]['id'],
+                'user_id' => $newUsers[0]->id,
                 'day' => $tomorrow->format('Y-m-d'),
             ],
             [
@@ -70,20 +68,20 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[1]['id'],
+                'user_id' => $newUsers[1]->id,
                 'day' => $today->format('Y-m-d'),
             ],
         ]);
 
         // verify number of results in database
         $this->assertEquals(1, \DB::table('user_availability')
-            ->where('user_id', $newUsers[0]['id'])
+            ->where('user_id', $newUsers[0]->id)
             ->where('day', $today->format('Y-m-d'))->count());
         $this->assertEquals(1, \DB::table('user_availability')
-            ->where('user_id', $newUsers[0]['id'])
+            ->where('user_id', $newUsers[0]->id)
             ->where('day', $tomorrow->format('Y-m-d'))->count());
         $this->assertEquals(1, \DB::table('user_availability')
-            ->where('user_id', $newUsers[1]['id'])
+            ->where('user_id', $newUsers[1]->id)
             ->where('day', $today->format('Y-m-d'))->count());
 
         $newAvailabilities = [
@@ -118,13 +116,13 @@ class CalendarAvailabilityControllerTest extends \TestCase
 
         // verify number of results in database
         $this->assertEquals(2, \DB::table('user_availability')
-            ->where('user_id', $newUsers[0]['id'])
+            ->where('user_id', $newUsers[0]->id)
             ->where('day', $today->format('Y-m-d'))->count());
         $this->assertEquals(1, \DB::table('user_availability')
-            ->where('user_id', $newUsers[0]['id'])
+            ->where('user_id', $newUsers[0]->id)
             ->where('day', $tomorrow->format('Y-m-d'))->count());
         $this->assertEquals(1, \DB::table('user_availability')
-            ->where('user_id', $newUsers[1]['id'])
+            ->where('user_id', $newUsers[1]->id)
             ->where('day', $today->format('Y-m-d'))->count());
 
         // verify if new records are in database
@@ -142,9 +140,148 @@ class CalendarAvailabilityControllerTest extends \TestCase
 
     public function testStore_withValidDataWhenNotAdmin()
     {
-        // @todo + success test for non-admin user after authorize is solved
+        $this->createUser()->setRole(RoleType::DEVELOPER);
+        auth()->loginUsingId($this->user->id);
+
+        $newUsers = factory(User::class, 2)->create(['deleted' => 0]);
+        $today = Carbon::now();
+        $tomorrow = with(clone $today)->addDay(1);
+
+        // create sample availabilities for users
+        \DB::table('user_availability')->insert([
+            [
+                'time_start' => '00:00:00',
+                'time_stop' => '01:00:00',
+                'available' => 1,
+                'description' => 'Sample description test',
+                'user_id' => $newUsers[0]->id,
+                'day' => $today->format('Y-m-d'),
+            ],
+        ]);
+
+        // verify number of results in database
+        $this->assertEquals(1, \DB::table('user_availability')
+            ->where('user_id', $newUsers[0]->id)
+            ->where('day', $today->format('Y-m-d'))->count());
+
+        $newAvailabilities = [
+            [
+                'time_start' => '12:00:00',
+                'time_stop' => '15:00:00',
+                'available' => true,
+                'description' => 'Sample description',
+            ],
+            [
+                'time_start' => '02:00:00',
+                'time_stop' => '04:00:00',
+                'available' => false,
+                'description' => "Sorry I'm out ",
+            ],
+        ];
+
+        $this->post('/users/' . $newUsers[0]->id . '/availabilities/' .
+            $today->format('Y-m-d'), [
+            'availabilities' => $newAvailabilities,
+        ])->seeStatusCode(422)->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
+            ->seeJsonStructure([
+                'fields' => [
+                    'user',
+                ],
+            ])
+            ->isJson();
+
+        // verify number of results in database
+        $this->assertEquals(1, \DB::table('user_availability')
+            ->where('user_id', $newUsers[0]->id)
+            ->where('day', $today->format('Y-m-d'))->count());
+
+        // verify if new records are in database
+        $this->dontSeeInDatabase('user_availability',
+            array_merge($newAvailabilities[0], [
+                'user_id' => $newUsers[0]->id,
+                'day' => $today->format('Y-m-d'),
+            ]));
+        $this->dontSeeInDatabase('user_availability',
+            array_merge($newAvailabilities[1], [
+                'user_id' => $newUsers[0]->id,
+                'day' => $today->format('Y-m-d'),
+            ]));
     }
 
+    public function testStore_withValidDataWhenNotForHimself()
+    {
+        $this->createUser()->setRole(RoleType::DEVELOPER);
+        auth()->loginUsingId($this->user->id);
+
+        $newUsers = factory(User::class, 2)->create(['deleted' => 0]);
+        $today = Carbon::now();
+        $tomorrow = with(clone $today)->addDay(1);
+
+        // create sample availabilities for users
+        \DB::table('user_availability')->insert([
+            [
+                'time_start' => '00:00:00',
+                'time_stop' => '01:00:00',
+                'available' => 1,
+                'description' => 'Sample description test',
+                'user_id' => $this->user->id,
+                'day' => $today->format('Y-m-d'),
+            ],
+        ]);
+
+        // verify number of results in database
+        $this->assertEquals(1, \DB::table('user_availability')
+            ->where('user_id', $this->user->id)
+            ->where('day', $today->format('Y-m-d'))->count());
+
+        $newAvailabilities = [
+            [
+                'time_start' => '12:00:00',
+                'time_stop' => '15:00:00',
+                'available' => true,
+                'description' => 'Sample description',
+            ],
+            [
+                'time_start' => '02:00:00',
+                'time_stop' => '04:00:00',
+                'available' => false,
+                'description' => "Sorry I'm out ",
+            ],
+        ];
+
+        $this->post('/users/' . $this->user->id . '/availabilities/' .
+            $today->format('Y-m-d'), [
+            'availabilities' => $newAvailabilities,
+        ])->seeStatusCode(201)->seeJsonContains([
+        'data' => [
+            $newAvailabilities[1],
+            $newAvailabilities[0],
+        ],
+        ])->isJson();
+
+        // make sure the order in response is appropriate
+        $json = $this->decodeResponseJson()['data'];
+        $this->assertEquals($newAvailabilities[1], $json[0]);
+        $this->assertEquals($newAvailabilities[0], $json[1]);        
+
+        // verify number of results in database
+        $this->assertEquals(2, \DB::table('user_availability')
+            ->where('user_id', $this->user->id)
+            ->where('day', $today->format('Y-m-d'))->count());
+
+        // verify if new records are in database
+        $this->seeInDatabase('user_availability',
+            array_merge($newAvailabilities[0], [
+                'user_id' => $this->user->id,
+                'day' => $today->format('Y-m-d'),
+            ]));
+        $this->seeInDatabase('user_availability',
+            array_merge($newAvailabilities[1], [
+                'user_id' => $this->user->id,
+                'day' => $today->format('Y-m-d'),
+            ]));
+    }    
+    
     public function testShow_whenUserDoesNotExists()
     {
         // @todo seems that isJson method doesn't work as expected
@@ -190,6 +327,65 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 $this->formatAvailability($availabilities[3]),
             ],
         ])->isJson();
+    }
+
+    public function testShow_whenAdmin()
+    {
+        $this->createUser()->setRole(RoleType::ADMIN);
+        auth()->loginUsingId($this->user->id);
+
+        list($newUsers, $today, $tomorrow, $availabilities) =
+            $this->prepareGetData();
+
+        $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
+            $tomorrow->format('Y-m-d'))->seeStatusCode(200);
+    }
+
+    public function testShow_whenDeveloper_forHimself()
+    {
+        $this->createUser()->setRole(RoleType::DEVELOPER);
+        auth()->loginUsingId($this->user->id);
+
+        list($newUsers, $today, $tomorrow, $availabilities) =
+            $this->prepareGetData();
+
+        $this->get('/users/' . $this->user->id . '/availabilities/' .
+            $tomorrow->format('Y-m-d'))->seeStatusCode(200);
+    }
+
+    public function testShow_whenDeveloper_forOtherUser()
+    {
+        $this->createUser()->setRole(RoleType::DEVELOPER);
+        auth()->loginUsingId($this->user->id);
+
+        list($newUsers, $today, $tomorrow, $availabilities) =
+            $this->prepareGetData();
+
+        $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
+            $tomorrow->format('Y-m-d'))->seeStatusCode(401);
+    }
+
+    public function testShow_whenDeveloper_forOtherUserInSameProject()
+    {
+        $this->createUser()->setRole(RoleType::DEVELOPER);
+        auth()->loginUsingId($this->user->id);
+
+        list($newUsers, $today, $tomorrow, $availabilities) =
+            $this->prepareGetData();        
+
+        \DB::table('project_user')->insert([
+            [
+                'project_id' => 1,
+                'user_id' => $this->user->id,
+            ],
+            [
+                'project_id' => 1,
+                'user_id' => $newUsers[0]->id,
+            ],
+        ]);
+        
+        $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
+            $tomorrow->format('Y-m-d'))->seeStatusCode(200);
     }
 
     public function testIndex_withoutParameters()
@@ -258,14 +454,14 @@ class CalendarAvailabilityControllerTest extends \TestCase
                         ],
                     ],
                     [
-                        'id' => $newUsers[0]['id'],
+                        'id' => $newUsers[0]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[2]),
                             $this->formatAvailability($availabilities[1]),
                         ],
                     ],
                     [
-                        'id' => $newUsers[1]['id'],
+                        'id' => $newUsers[1]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[5]),
                         ],
@@ -276,7 +472,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'date' => $tomorrow->format('Y-m-d'),
                 'users' => [
                     [
-                        'id' => $newUsers[0]['id'],
+                        'id' => $newUsers[0]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[3]),
                         ],
@@ -287,7 +483,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'date' => with(clone $tomorrow)->addDay(2)->format('Y-m-d'),
                 'users' => [
                     [
-                        'id' => $newUsers[2]['id'],
+                        'id' => $newUsers[2]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[6]),
                         ],
@@ -334,17 +530,19 @@ class CalendarAvailabilityControllerTest extends \TestCase
         ], $json['days'], 'Dates are same');
 
         $this->assertEquals(
-            [[
-                'date' => $today->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $this->user->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[0]),
+            [
+                [
+                    'date' => $today->format('Y-m-d'),
+                    'users' => [
+                        [
+                            'id' => $this->user->id,
+                            'availabilities' => [
+                                $this->formatAvailability($availabilities[0]),
+                            ],
                         ],
                     ],
                 ],
-            ]], $json['availabilities']);
+            ], $json['availabilities']);
     }
 
     public function testIndex_whenDeveloperWithProjects()
@@ -418,9 +616,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
                             $this->formatAvailability($availabilities[0]),
                         ],
                     ],
-                    
+
                     [
-                        'id' => $newUsers[0]['id'],
+                        'id' => $newUsers[0]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[2]),
                             $this->formatAvailability($availabilities[1]),
@@ -432,7 +630,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'date' => $tomorrow->format('Y-m-d'),
                 'users' => [
                     [
-                        'id' => $newUsers[0]['id'],
+                        'id' => $newUsers[0]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[3]),
                         ],
@@ -443,7 +641,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'date' => with(clone $tomorrow)->addDay(2)->format('Y-m-d'),
                 'users' => [
                     [
-                        'id' => $newUsers[2]['id'],
+                        'id' => $newUsers[2]->id,
                         'availabilities' => [
                             $this->formatAvailability($availabilities[5]),
                         ],
@@ -474,7 +672,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '16:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[0]['id'],
+                'user_id' => $newUsers[0]->id,
                 'day' => $today->format('Y-m-d'),
             ],
             [
@@ -482,7 +680,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '14:00:00',
                 'available' => 0,
                 'description' => 'Sample description test 2',
-                'user_id' => $newUsers[0]['id'],
+                'user_id' => $newUsers[0]->id,
                 'day' => $today->format('Y-m-d'),
             ],
             [
@@ -490,7 +688,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[0]['id'],
+                'user_id' => $newUsers[0]->id,
                 'day' => $tomorrow->format('Y-m-d'),
             ],
             [
@@ -498,7 +696,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[2]['id'],
+                'user_id' => $newUsers[2]->id,
                 'day' => with(clone $tomorrow)->addDay(2)->format('Y-m-d'),
             ],
             [
@@ -506,7 +704,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[1]['id'],
+                'user_id' => $newUsers[1]->id,
                 'day' => $today->format('Y-m-d'),
             ],
             [
@@ -514,7 +712,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'time_stop' => '01:00:00',
                 'available' => 1,
                 'description' => 'Sample description test',
-                'user_id' => $newUsers[1]['id'],
+                'user_id' => $newUsers[1]->id,
                 'day' => with(clone $today)->addDays(20)->format('Y-m-d'),
             ],
         ];

@@ -23,6 +23,11 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         $tokenExpired = false;
+        
+        // @todo change this
+        if (auth()->user()) {
+            return $next($request);
+        }
 
         try {
             /** @var User $user */
