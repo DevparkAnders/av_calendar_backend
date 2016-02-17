@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "21f7cce26459f1ad93f7d17ab1698290",
-    "content-hash": "b153905d81fc4d98936db5eda48b2175",
+    "hash": "a34890adbc5f8024806f52958bb8bfbc",
+    "content-hash": "d317307124efe5e2653098c09261819a",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -2877,16 +2877,16 @@
         },
         {
             "name": "mnabialek/laravel-sql-logger",
-            "version": "dev-develop",
+            "version": "v1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mnabialek/laravel-sql-logger.git",
-                "reference": "56552b4be1af7d6810b3186324dd2a277cd7aba5"
+                "reference": "844cd77d671c27fea481da2e794102f22563dfb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mnabialek/laravel-sql-logger/zipball/56552b4be1af7d6810b3186324dd2a277cd7aba5",
-                "reference": "56552b4be1af7d6810b3186324dd2a277cd7aba5",
+                "url": "https://api.github.com/repos/mnabialek/laravel-sql-logger/zipball/844cd77d671c27fea481da2e794102f22563dfb0",
+                "reference": "844cd77d671c27fea481da2e794102f22563dfb0",
                 "shasum": ""
             },
             "require": {
@@ -2916,7 +2916,7 @@
                 "lumen",
                 "sql"
             ],
-            "time": "2016-01-24 14:11:53"
+            "time": "2016-02-16 17:31:21"
         },
         {
             "name": "mockery/mockery",
@@ -4094,8 +4094,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "mnabialek/laravel-simple-modules": 20,
-        "mnabialek/laravel-sql-logger": 20
+        "mnabialek/laravel-simple-modules": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
