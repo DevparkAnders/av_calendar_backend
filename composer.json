@@ -10,7 +10,8 @@
         "doctrine/dbal": "^2.5",
         "tymon/jwt-auth": "^0.5.6",
         "mnabialek/laravel-simple-modules": "dev-develop",
-        "league/fractal": "^0.13.0"
+        "league/fractal": "^0.13.0",
+        "mnabialek/laravel-authorize": "dev-develop"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

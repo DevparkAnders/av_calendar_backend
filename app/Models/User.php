@@ -6,22 +6,26 @@ use App\Modules\User\Traits\Active;
 use App\Modules\User\Traits\Allowed;
 use App\Modules\User\Traits\Fillable;
 use App\Modules\User\Traits\Removeable;
-use App\Modules\User\Traits\Roleable;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Mnabialek\LaravelAuthorize\Contracts\Roleable as RoleableContract;
+use Mnabialek\LaravelAuthorize\Traits\Roleable;
 
 class User extends Model implements
     AuthenticatableContract,
     AuthorizableContract,
-    CanResetPasswordContract
+    CanResetPasswordContract,
+    RoleableContract
 {
     use Authenticatable, Authorizable, CanResetPassword;
 
-    use Allowed, Roleable, Fillable, Removeable, Active;
+    use Allowed, Fillable, Removeable, Active;
+
+    use Roleable;
 
     /**
      * The attributes that are mass assignable.
@@ -50,6 +54,16 @@ class User extends Model implements
     // relationships
 
     /**
+     * User has single role
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }    
+
+    /**
      * User can be assigned to multiple projects
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -74,4 +88,28 @@ class User extends Model implements
     // accessors, mutators
 
     // functions
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoles()
+    {
+        $roles = [];
+
+        if ($this->role) {
+            $roles[] = $this->role->name;
+        }
+
+        return $roles;
+    }
+
+    /**
+     * Verify if user is admin
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return (bool)in_array(RoleType::ADMIN, $this->getRoles());
+    }
 }

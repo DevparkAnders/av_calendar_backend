@@ -131,7 +131,7 @@ return [
         /*
          * Laravel Framework Service Providers...
          */
-        Illuminate\Auth\AuthServiceProvider::class,
+        // Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
@@ -168,6 +168,8 @@ return [
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Mnabialek\LaravelSimpleModules\Providers\SimpleModules::class,
         Mnabialek\LaravelSimpleModules\Providers\ConsoleSupport::class,
+        Mnabialek\LaravelAuthorize\Providers\Auth::class,
+        Mnabialek\LaravelAuthorize\Providers\Authorize::class,
     ],
 
     /*

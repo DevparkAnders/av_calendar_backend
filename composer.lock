@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a34890adbc5f8024806f52958bb8bfbc",
-    "content-hash": "d317307124efe5e2653098c09261819a",
+    "hash": "007248512aa77defdd7670486718b848",
+    "content-hash": "b075e4f51cff10a0a08c6055a81126f5",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -982,6 +982,49 @@
                 "rest"
             ],
             "time": "2016-01-26 23:37:34"
+        },
+        {
+            "name": "mnabialek/laravel-authorize",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mnabialek/laravel-authorize.git",
+                "reference": "b5d574b32273f6a86c499d2cd5223b38e74b0543"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mnabialek/laravel-authorize/zipball/b5d574b32273f6a86c499d2cd5223b38e74b0543",
+                "reference": "b5d574b32273f6a86c499d2cd5223b38e74b0543",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mnabialek\\LaravelAuthorize\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mnabialek",
+                    "email": "gitre@nabialek.org"
+                }
+            ],
+            "description": "Allows authorize user based on role or permission",
+            "keywords": [
+                "authorization",
+                "authorize",
+                "laravel",
+                "permission",
+                "role"
+            ],
+            "time": "2016-02-07 23:12:13"
         },
         {
             "name": "mnabialek/laravel-simple-modules",
@@ -4094,7 +4137,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "mnabialek/laravel-simple-modules": 20
+        "mnabialek/laravel-simple-modules": 20,
+        "mnabialek/laravel-authorize": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
