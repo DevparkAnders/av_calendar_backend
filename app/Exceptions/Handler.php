@@ -2,11 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\ApiResponse;
+use App\Helpers\ErrorCode;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-//use Illuminate\Foundation\Validation\ValidationException;
+use Illuminate\Http\Exception\HttpResponseException;
+use PDOException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -18,10 +20,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
-        ModelNotFoundException::class,
-      //  ValidationException::class,
+
     ];
 
     /**
@@ -35,8 +34,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $e)
     {
-        // @todo need to report errors
-        return parent::report($e);
+        parent::report($e);
     }
 
     /**
@@ -49,8 +47,41 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        // @todo handle other errors
+        // if debugging is set to true, we will return standard error response
+        // to easier detect error and solve it by developer
+        if (config('app.debug', false)) {
+            return parent::render($request, $e);
+        }
+        
+        $class = get_class($e);
+        
+        // in case of validation errors, we want to just return response
+        if ($class == HttpResponseException::class) {
+            return $e->getResponse();
+        }
 
-        return parent::render($request, $e);
+        // otherwise we will return custom API response
+        $errorCode = null;
+
+        switch ($class) {
+            case ModelNotFoundException::class:
+                $errorCode = ErrorCode::RESOURCE_NOT_FOUND;
+                $responseCode = 404;
+                break;
+            case NotFoundHttpException::class:
+            case MethodNotAllowedHttpException::class:
+                $errorCode = ErrorCode::NOT_FOUND;
+                $responseCode = 404;
+                break;
+            case PDOException::class:
+                $errorCode = ErrorCode::DATABASE_ERROR;
+                $responseCode = 500;
+                break;
+            default:
+                $errorCode = ErrorCode::API_ERROR;
+                $responseCode = 500;
+        }
+
+        return ApiResponse::responseError($errorCode, $responseCode);
     }
 }

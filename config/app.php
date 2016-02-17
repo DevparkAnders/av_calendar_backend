@@ -161,6 +161,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ResponseMacroServiceProvider::class,
+        App\Providers\LogServiceProvider::class,
 
         /*
          * 3rd party providers 
