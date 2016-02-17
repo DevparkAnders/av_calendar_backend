@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "21f7cce26459f1ad93f7d17ab1698290",
-    "content-hash": "b153905d81fc4d98936db5eda48b2175",
+    "hash": "007248512aa77defdd7670486718b848",
+    "content-hash": "b075e4f51cff10a0a08c6055a81126f5",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -710,16 +710,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.2.12",
+            "version": "5.2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6b6255ad7bfbdb721b8d00b09d52b146c5d363d7"
+                "reference": "690a6bd1e5af215f2cd29eb2a1b1a66acbc906d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6b6255ad7bfbdb721b8d00b09d52b146c5d363d7",
-                "reference": "6b6255ad7bfbdb721b8d00b09d52b146c5d363d7",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/690a6bd1e5af215f2cd29eb2a1b1a66acbc906d1",
+                "reference": "690a6bd1e5af215f2cd29eb2a1b1a66acbc906d1",
                 "shasum": ""
             },
             "require": {
@@ -834,7 +834,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2016-01-26 04:15:37"
+            "time": "2016-02-16 19:48:12"
         },
         {
             "name": "league/flysystem",
@@ -982,6 +982,49 @@
                 "rest"
             ],
             "time": "2016-01-26 23:37:34"
+        },
+        {
+            "name": "mnabialek/laravel-authorize",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mnabialek/laravel-authorize.git",
+                "reference": "b5d574b32273f6a86c499d2cd5223b38e74b0543"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mnabialek/laravel-authorize/zipball/b5d574b32273f6a86c499d2cd5223b38e74b0543",
+                "reference": "b5d574b32273f6a86c499d2cd5223b38e74b0543",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mnabialek\\LaravelAuthorize\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mnabialek",
+                    "email": "gitre@nabialek.org"
+                }
+            ],
+            "description": "Allows authorize user based on role or permission",
+            "keywords": [
+                "authorization",
+                "authorize",
+                "laravel",
+                "permission",
+                "role"
+            ],
+            "time": "2016-02-07 23:12:13"
         },
         {
             "name": "mnabialek/laravel-simple-modules",
@@ -2877,16 +2920,16 @@
         },
         {
             "name": "mnabialek/laravel-sql-logger",
-            "version": "dev-develop",
+            "version": "v1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mnabialek/laravel-sql-logger.git",
-                "reference": "56552b4be1af7d6810b3186324dd2a277cd7aba5"
+                "reference": "844cd77d671c27fea481da2e794102f22563dfb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mnabialek/laravel-sql-logger/zipball/56552b4be1af7d6810b3186324dd2a277cd7aba5",
-                "reference": "56552b4be1af7d6810b3186324dd2a277cd7aba5",
+                "url": "https://api.github.com/repos/mnabialek/laravel-sql-logger/zipball/844cd77d671c27fea481da2e794102f22563dfb0",
+                "reference": "844cd77d671c27fea481da2e794102f22563dfb0",
                 "shasum": ""
             },
             "require": {
@@ -2916,7 +2959,7 @@
                 "lumen",
                 "sql"
             ],
-            "time": "2016-01-24 14:11:53"
+            "time": "2016-02-16 17:31:21"
         },
         {
             "name": "mockery/mockery",
@@ -4095,7 +4138,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "mnabialek/laravel-simple-modules": 20,
-        "mnabialek/laravel-sql-logger": 20
+        "mnabialek/laravel-authorize": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
