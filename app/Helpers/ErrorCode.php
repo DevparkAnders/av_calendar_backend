@@ -8,6 +8,10 @@ class ErrorCode
     const VALIDATION_FAILED = 'general.validation_failed';
     const REQUESTS_RATE_EXCEEDED = 'general.request_rate_exceeded';
     const NO_PERMISSION = 'general.no_action_permission';
+    const RESOURCE_NOT_FOUND = 'general.no_resource_found';
+    const API_ERROR = 'general.api_error';
+    const NOT_FOUND = 'general.invalid_action_or_method';
+    const DATABASE_ERROR = 'general.database_error';
     
     // AUTH
     const AUTH_INVALID_LOGIN_DATA = 'auth.invalid_login_data';
