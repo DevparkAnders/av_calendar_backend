@@ -6,11 +6,42 @@ use App\Helpers\ApiResponse;
 use App\Helpers\ErrorCode;
 use App\Models\User;
 use Closure;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Container\Container;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use JWTAuth;
+use Tymon\JWTAuth\JWTAuth;
 
 class Authenticate
 {
+    /**
+     * @var JWTAuth
+     */
+    protected $tokenAuth;
+    
+    /**
+     * @var Container
+     */
+    protected $app;
+    
+    /**
+     * @var Guard
+     */
+    protected $guard;
+
+    /**
+     * Authenticate constructor.
+     *
+     * @param JWTAuth $tokenAuth
+     * @param Container $app
+     * @param Guard $guard
+     */
+    public function __construct(JWTAuth $tokenAuth, Container $app, Guard $guard)
+    {
+        $this->tokenAuth = $tokenAuth;
+        $this->app = $app;
+        $this->guard = $guard;
+    }
+    
     /**
      * Handle an incoming request.
      *
@@ -24,14 +55,17 @@ class Authenticate
     {
         $tokenExpired = false;
         
-        // @todo change this
-        if (auth()->user()) {
+        // in case it's testing environment and user is already logged
+        // we won't do anything more
+        if ($this->app->environment('testing') && $this->guard->user()) {
             return $next($request);
         }
+        
+        // otherwise we will try to authenticate user via token
 
         try {
             /** @var User $user */
-            $user = JWTAuth::setRequest($request)->parseToken()->authenticate();
+            $user = $this->tokenAuth->setRequest($request)->parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
             $tokenExpired = true;
         } catch (\Exception $e) {
@@ -70,10 +104,10 @@ class Authenticate
      */
     protected function refreshToken($request)
     {
-        $newToken = JWTAuth::refresh();
+        $newToken = $this->tokenAuth->refresh();
         $request->headers->set('JWTRefreshed', '1', true);
         $request->headers->set('Authorization', 'Bearer ' . $newToken, true);
 
-        return JWTAuth::authenticate();
+        return  $this->tokenAuth->authenticate();
     }
 }

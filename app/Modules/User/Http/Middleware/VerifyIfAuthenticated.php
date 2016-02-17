@@ -5,10 +5,25 @@ namespace App\Modules\User\Http\Middleware;
 use App\Helpers\ApiResponse;
 use App\Helpers\ErrorCode;
 use Closure;
-use JWTAuth;
+use Tymon\JWTAuth\JWTAuth;
 
 class VerifyIfAuthenticated
 {
+    /**
+     * @var JWTAuth
+     */
+    protected $tokenAuth;
+
+    /**
+     * Authenticate constructor.
+     *
+     * @param JWTAuth $tokenAuth
+     */
+    public function __construct(JWTAuth $tokenAuth)
+    {
+        $this->tokenAuth = $tokenAuth;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -22,7 +37,7 @@ class VerifyIfAuthenticated
     {
         $user = null;
         try {
-            $user = JWTAuth::setRequest($request)->parseToken()->authenticate();
+            $user = $this->tokenAuth->setRequest($request)->parseToken()->authenticate();
         } catch (\Exception $e) {
             // we don't care about exceptions in this place
         }
