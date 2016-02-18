@@ -5,8 +5,8 @@ namespace App\Modules\User\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Helpers\ErrorCode;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ResetPassword;
-use App\Http\Requests\SendResetEmail;
+use App\Modules\User\Http\Requests\ResetPassword;
+use App\Modules\User\Http\Requests\SendResetEmail;
 use Illuminate\Mail\Message;
 use Password;
 
