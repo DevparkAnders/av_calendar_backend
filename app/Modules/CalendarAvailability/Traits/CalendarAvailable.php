@@ -4,6 +4,7 @@ namespace App\Modules\CalendarAvailability\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
+use DB;
 
 trait CalendarAvailable
 {
@@ -64,13 +65,18 @@ trait CalendarAvailable
      */
     public static function add($objectId, $day, array $data)
     {
-        // first remove existing entries for object in this day
-        self::deleteForObjectsAndDays($objectId, $day);
+        DB::transaction(function() use ($objectId, $day, $data) {
+            // first remove existing entries for object in this day
+            self::deleteForObjectsAndDays($objectId, $day);
 
-        // now, add new ones
-        foreach ($data as $availability) {
-            self::create(array_merge($availability,
-                [self::$calendarObjectIdColumn => $objectId, 'day' => $day]));
-        }
+            // now, add new ones
+            foreach ($data as $availability) {
+                self::create(array_merge($availability,
+                    [
+                        self::$calendarObjectIdColumn => $objectId,
+                        'day' => $day
+                    ]));
+            }
+        });
     }
 }
