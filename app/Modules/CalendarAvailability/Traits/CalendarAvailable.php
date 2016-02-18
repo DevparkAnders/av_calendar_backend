@@ -65,7 +65,7 @@ trait CalendarAvailable
      */
     public static function add($objectId, $day, array $data)
     {
-        DB::transaction(function() use ($objectId, $day, $data) {
+        DB::transaction(function () use ($objectId, $day, $data) {
             // first remove existing entries for object in this day
             self::deleteForObjectsAndDays($objectId, $day);
 
@@ -74,7 +74,7 @@ trait CalendarAvailable
                 self::create(array_merge($availability,
                     [
                         self::$calendarObjectIdColumn => $objectId,
-                        'day' => $day
+                        'day' => $day,
                     ]));
             }
         });
