@@ -99,20 +99,23 @@ class CalendarAvailabilityControllerTest extends \TestCase
             ],
         ];
 
+        $expectedAvailabilities =
+            $this->getExpectedAvailabilities($newAvailabilities, $today);
+
         $this->post('/users/' . $newUsers[0]->id . '/availabilities/' .
             $today->format('Y-m-d'), [
             'availabilities' => $newAvailabilities,
         ])->seeStatusCode(201)->seeJsonContains([
             'data' => [
-                $newAvailabilities[1],
-                $newAvailabilities[0],
+                $expectedAvailabilities[1],
+                $expectedAvailabilities[0],
             ],
         ])->isJson();
 
         // make sure the order in response is appropriate
         $json = $this->decodeResponseJson()['data'];
-        $this->assertEquals($newAvailabilities[1], $json[0]);
-        $this->assertEquals($newAvailabilities[0], $json[1]);
+        $this->assertEquals($expectedAvailabilities[1], $json[0]);
+        $this->assertEquals($expectedAvailabilities[0], $json[1]);
 
         // verify number of results in database
         $this->assertEquals(2, \DB::table('user_availability')
@@ -127,14 +130,12 @@ class CalendarAvailabilityControllerTest extends \TestCase
 
         // verify if new records are in database
         $this->seeInDatabase('user_availability',
-            array_merge($newAvailabilities[0], [
+            array_merge($expectedAvailabilities[0], [
                 'user_id' => $newUsers[0]->id,
-                'day' => $today->format('Y-m-d'),
             ]));
         $this->seeInDatabase('user_availability',
-            array_merge($newAvailabilities[1], [
+            array_merge($expectedAvailabilities[1], [
                 'user_id' => $newUsers[0]->id,
-                'day' => $today->format('Y-m-d'),
             ]));
     }
 
@@ -182,7 +183,8 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->post('/users/' . $newUsers[0]->id . '/availabilities/' .
             $today->format('Y-m-d'), [
             'availabilities' => $newAvailabilities,
-        ])->seeStatusCode(422)->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
+        ])->seeStatusCode(422)
+            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
             ->seeJsonStructure([
                 'fields' => [
                     'user',
@@ -249,20 +251,23 @@ class CalendarAvailabilityControllerTest extends \TestCase
             ],
         ];
 
+        $expectedAvailabilities =
+            $this->getExpectedAvailabilities($newAvailabilities, $today);
+
         $this->post('/users/' . $this->user->id . '/availabilities/' .
             $today->format('Y-m-d'), [
             'availabilities' => $newAvailabilities,
         ])->seeStatusCode(201)->seeJsonContains([
-        'data' => [
-            $newAvailabilities[1],
-            $newAvailabilities[0],
-        ],
+            'data' => [
+                $expectedAvailabilities[1],
+                $expectedAvailabilities[0],
+            ],
         ])->isJson();
 
         // make sure the order in response is appropriate
         $json = $this->decodeResponseJson()['data'];
-        $this->assertEquals($newAvailabilities[1], $json[0]);
-        $this->assertEquals($newAvailabilities[0], $json[1]);
+        $this->assertEquals($expectedAvailabilities[1], $json[0]);
+        $this->assertEquals($expectedAvailabilities[0], $json[1]);
 
         // verify number of results in database
         $this->assertEquals(2, \DB::table('user_availability')
@@ -271,17 +276,29 @@ class CalendarAvailabilityControllerTest extends \TestCase
 
         // verify if new records are in database
         $this->seeInDatabase('user_availability',
-            array_merge($newAvailabilities[0], [
+            array_merge($expectedAvailabilities[0], [
                 'user_id' => $this->user->id,
-                'day' => $today->format('Y-m-d'),
             ]));
         $this->seeInDatabase('user_availability',
-            array_merge($newAvailabilities[1], [
+            array_merge($expectedAvailabilities[1], [
                 'user_id' => $this->user->id,
-                'day' => $today->format('Y-m-d'),
             ]));
     }
-    
+
+    protected function getExpectedAvailabilities(
+        array $availabilities,
+        Carbon $date
+    ) {
+        $expectedAvailabilities = [];
+
+        foreach ($availabilities as $av) {
+            $expectedAvailabilities[] =
+                array_merge($av, ['day' => $date->format('Y-m-d')]);
+        }
+
+        return $expectedAvailabilities;
+    }
+
     public function testShow_whenUserDoesNotExists()
     {
         // @todo seems that isJson method doesn't work as expected
@@ -383,7 +400,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
                 'user_id' => $newUsers[0]->id,
             ],
         ]);
-        
+
         $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
             $tomorrow->format('Y-m-d'))->seeStatusCode(200);
     }
@@ -417,81 +434,56 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->get('/users/availabilities?from=' . $today->format('Y-m-d') .
             '&limit=4')
             ->seeStatusCode(200)->isJson();
+        
+        $json = $this->decodeResponseJson();
 
-        $json = $this->decodeResponseJson()['data'];
+        $data = $json['data'];
+        
+        $this->assertEquals($today->format('Y-m-d'), $json['date_start']);
+        $this->assertEquals($today->addDays(3)->format('Y-m-d'), $json['date_end']);
+        
 
-        $this->assertEquals([
-            $this->formatUser($this->user),
-            $this->formatUser($newUsers[0]),
-            $this->formatUser($newUsers[1]),
-            $this->formatUser($newUsers[2]),
-        ], $json['users']);
+        $this->assertEquals(1 + $newUsers->count(), count($data));
 
-        $this->assertEquals([
-            [
-                'date' => $today->format('Y-m-d'),
-            ],
-            [
-                'date' => $tomorrow->format('Y-m-d'),
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDay()->format('Y-m-d'),
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDays(2)->format('Y-m-d'),
-            ],
-
-        ], $json['days']);
-
-        $this->assertEquals([
-            [
-                'date' => $today->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $this->user->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[0]),
-                        ],
-                    ],
-                    [
-                        'id' => $newUsers[0]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[2]),
-                            $this->formatAvailability($availabilities[1]),
-                        ],
-                    ],
-                    [
-                        'id' => $newUsers[1]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[5]),
-                        ],
-                    ],
+        $this->assertEquals(array_merge($this->formatUser($this->user), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[0]),
                 ],
             ],
-            [
-                'date' => $tomorrow->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $newUsers[0]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[3]),
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDay(2)->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $newUsers[2]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[6]),
-                        ],
-                    ],
-                ],
-            ],
+        ]), $data[0]);
 
-        ], $json['availabilities']);
+        $this->assertEquals(array_merge($this->formatUser($newUsers[0]), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[2]),
+                        $this->formatAvailability($availabilities[1]),
+                        $this->formatAvailability($availabilities[3]),
+                ],
+            ],
+        ]), $data[1]);
+
+        $this->assertEquals(array_merge($this->formatUser($newUsers[1]), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[5]),
+                ],
+            ],
+        ]), $data[2]);
+
+        $this->assertEquals(array_merge($this->formatUser($newUsers[2]), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[4]),
+                ],
+            ],
+        ]), $data[3]);
+
+        $this->assertEquals(array_merge($this->formatUser($newUsers[3]), [
+            'availabilities' => [
+                'data' => [],
+            ],
+        ]), $data[4]);
     }
 
     public function testIndex_whenDeveloperWithoutProjects()
@@ -507,42 +499,17 @@ class CalendarAvailabilityControllerTest extends \TestCase
             '&limit=4')
             ->seeStatusCode(200)->isJson();
 
-        $json = $this->decodeResponseJson()['data'];
+        $data = $this->decodeResponseJson()['data'];
+        
+        $this->assertEquals(1, count($data));
 
-        $this->assertEquals([
-            $this->formatUser($this->user),
-        ], $json['users'], 'Users are same');
-
-        $this->assertEquals([
-            [
-                'date' => $today->format('Y-m-d'),
-            ],
-            [
-                'date' => $tomorrow->format('Y-m-d'),
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDay()->format('Y-m-d'),
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDays(2)->format('Y-m-d'),
-            ],
-
-        ], $json['days'], 'Dates are same');
-
-        $this->assertEquals(
-            [
-                [
-                    'date' => $today->format('Y-m-d'),
-                    'users' => [
-                        [
-                            'id' => $this->user->id,
-                            'availabilities' => [
-                                $this->formatAvailability($availabilities[0]),
-                            ],
-                        ],
-                    ],
+        $this->assertEquals(array_merge($this->formatUser($this->user), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[0]),
                 ],
-            ], $json['availabilities']);
+            ],
+        ]), $data[0]);
     }
 
     public function testIndex_whenDeveloperWithProjects()
@@ -575,6 +542,14 @@ class CalendarAvailabilityControllerTest extends \TestCase
                     'project_id' => 2,
                     'user_id' => $newUsers[1]->id,
                 ],
+                [
+                    'project_id' => 8,
+                    'user_id' => $this->user->id,
+                ],
+                [
+                    'project_id' => 8,
+                    'user_id' => $newUsers[3]->id,
+                ],
             ]
         );
 
@@ -582,79 +557,47 @@ class CalendarAvailabilityControllerTest extends \TestCase
             '&limit=4')
             ->seeStatusCode(200)->isJson();
 
-        $json = $this->decodeResponseJson()['data'];
 
-        $this->assertEquals([
-            $this->formatUser($this->user),
-            $this->formatUser($newUsers[0]),
-            $this->formatUser($newUsers[2]),
-        ], $json['users']);
+        $data = $this->decodeResponseJson()['data'];
 
-        $this->assertEquals([
-            [
-                'date' => $today->format('Y-m-d'),
-            ],
-            [
-                'date' => $tomorrow->format('Y-m-d'),
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDay()->format('Y-m-d'),
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDays(2)->format('Y-m-d'),
-            ],
+        $this->assertEquals(1 + 3, count($data));
 
-        ], $json['days']);
-
-        $this->assertEquals([
-            [
-                'date' => $today->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $this->user->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[0]),
-                        ],
-                    ],
-
-                    [
-                        'id' => $newUsers[0]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[2]),
-                            $this->formatAvailability($availabilities[1]),
-                        ],
-                    ],
+        $this->assertEquals(array_merge($this->formatUser($this->user), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[0]),
                 ],
             ],
-            [
-                'date' => $tomorrow->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $newUsers[0]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[3]),
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'date' => with(clone $tomorrow)->addDay(2)->format('Y-m-d'),
-                'users' => [
-                    [
-                        'id' => $newUsers[2]->id,
-                        'availabilities' => [
-                            $this->formatAvailability($availabilities[5]),
-                        ],
-                    ],
-                ],
-            ],
+        ]), $data[0]);
 
-        ], $json['availabilities']);
+        $this->assertEquals(array_merge($this->formatUser($newUsers[0]), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[2]),
+                    $this->formatAvailability($availabilities[1]),
+                    $this->formatAvailability($availabilities[3]),
+                ],
+            ],
+        ]), $data[1]);
+
+        $this->assertEquals(array_merge($this->formatUser($newUsers[2]), [
+            'availabilities' => [
+                'data' => [
+                    $this->formatAvailability($availabilities[4]),
+                ],
+            ],
+        ]), $data[2]);
+
+        $this->assertEquals(array_merge($this->formatUser($newUsers[3]), [
+            'availabilities' => [
+                'data' => [],
+            ],
+        ]), $data[3]);
     }
 
     protected function prepareGetData()
     {
-        $newUsers = factory(User::class, 3)->create(['deleted' => 0]);
+        $newUsers = factory(User::class, 4)->create(['deleted' => 0]);
         $today = Carbon::now();
         $tomorrow = with(clone $today)->addDay(1);
 
@@ -726,7 +669,6 @@ class CalendarAvailabilityControllerTest extends \TestCase
     protected function formatAvailability(array $av)
     {
         unset($av['user_id']);
-        unset($av['day']);
         $av['available'] = (bool)$av['available'];
 
         return $av;

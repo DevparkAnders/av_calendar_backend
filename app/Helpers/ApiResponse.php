@@ -31,23 +31,24 @@ class ApiResponse
     /**
      * Json response to valid request.
      *
-     * @param  array $data
-     * @param  int $code
-     * @param  array $headers
-     * @param  int $options
+     * @param mixed $data
+     * @param int $code
+     * @param array $additional
+     * @param array $headers
+     * @param int $options
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public static function responseOk(
         $data = [],
         $code = 200,
-        $headers = [],
+        array $additional = [],
+        array $headers = [],
         $options = 0
     ) {
-        $json = [
+        $json = array_merge([
             'data' => self::transform($data),
-            'exec_time' => self::getExecutionTime(),
-        ];
+        ], $additional, ['exec_time' => self::getExecutionTime()]);
 
         return new JsonResponse($json, $code, $headers, $options);
     }
@@ -93,7 +94,7 @@ class ApiResponse
     /**
      * Transform resource with fractal transformers if possible.
      *
-     * @param  mixed $data
+     * @param mixed $data
      *
      * @return mixed
      */
@@ -104,12 +105,15 @@ class ApiResponse
 //        }
 
         $fractal = new Manager();
+        
+        $transformerUsed = false;
 
         if (self::isResource($data) &&
             $transformer = self::hasTransformer($data)
         ) {
             $data = $fractal->createData(new Item($data, new $transformer()))
                 ->toArray();
+            $transformerUsed = true;
         }
 
         if (self::isCollection($data) && self::isResource($data[0]) &&
@@ -118,8 +122,8 @@ class ApiResponse
             $data =
                 $fractal->createData(new Collection($data, new $transformer()))
                     ->toArray();
+            $transformerUsed = true;
         }
-        
         // to transform also nested resources ['users' => [0 => User]]
         if (is_array($data)) {
             foreach ($data as $k => $v) {
@@ -127,7 +131,7 @@ class ApiResponse
             }
         }
 
-        return Arr::get($data, 'data', $data);
+        return $transformerUsed ? Arr::get($data, 'data', $data) : $data;
     }
 
     private static function hasTransformer($resource)
