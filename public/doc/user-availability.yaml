@@ -104,7 +104,7 @@ paths:
             type: array
             description: User availabilities. If you want to remove all user availabilities, send it as empty array
             items: 
-              $ref: "#/definitions/UserDayAvailability"
+              $ref: "#/definitions/UserDayAvailabilityPartial"
           
       responses:
         201:
@@ -126,29 +126,24 @@ definitions:
     type: object
     properties:
       data:
-        type: object
-        properties:
-          users:
-            type: array
-            description: Users that have any availability entries in selected period of dates
-            items: 
-              $ref: "#/definitions/User" 
-          days:
-            type: array
-            description: Days in ascending order in selected period
-            items: 
-              $ref: "#/definitions/Day" 
-          availabilities:
-            type: array
-            description: User day availability map
-            items:
-              $ref: "#/definitions/DayAvailability" 
+        type: array
+        description: Users with availabilities
+        items: 
+          $ref: "#/definitions/UserWithAvailabilities"
+      date_start:          
+        type: string
+        description: Start date of availabilities in format `YYYY-mmm-dd`
+      date_end:          
+        type: string
+        description: Start date of availabilities in format `YYYY-mmm-dd`        
+
       exec_time:
         type: number
         format: float
         description: API execution time
         
-  User:
+        
+  UserWithAvailabilities:
     type: object
     properties:
       id:
@@ -174,42 +169,25 @@ definitions:
       deleted:
         type: boolean
         description: Whether user has been deleted
-      
-  Day:
-    type: object
-    properties:
-      date:
-        type: string
-        description: Date in format `YYYY-mm-dd`
-        
-  DayAvailability:
-    type: object
-    properties:
-      date:
-        type: string
-        description: Date in format `YYYY-mm-dd`
-      users:
-        type: array
-        description: Users that have any availability entry in this day
-        items:
-          $ref: "#/definitions/UserAvailability" 
-      
-  UserAvailability:
-    type: object
-    properties:
-      id:
-        type: number
-        format: int
-        description: Id of user
       availabilities:
+         $ref: "#/definitions/AvailabilityStructure"         
+            
+  AvailabilityStructure:
+    type: object
+    properties:
+      data:
         type: array
-        description: Availabilities of user in single day
-        items:
-          $ref: "#/definitions/UserDayAvailability" 
+        description: Availability data
+        items: 
+            $ref: "#/definitions/UserDayAvailability"         
+    
           
   UserDayAvailability:
     type: object
     properties:
+      day:
+        type: string
+        description: Date in format `YYYY-mm-dd`    
       time_start:
         type: string
         description: Start time (can be null)
@@ -223,6 +201,21 @@ definitions:
         type: string
         description: Optional description for this entry
         
+  UserDayAvailabilityPartial:
+    type: object
+    properties:
+      time_start:
+        type: string
+        description: Start time (can be null)
+      time_stop:
+        type: string
+        description: Stop time (can be null)        
+      available:
+        type: boolean
+        description: Whether user is available in given time (or date if times are empty) or not
+      description:
+        type: string
+        description: Optional description for this entry        
         
   UserAvailabilitiesResponse:
     type: object
