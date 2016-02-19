@@ -11,7 +11,7 @@ use App\Modules\CalendarAvailability\Http\Requests\CalendarAvailabilityIndex;
 use App\Modules\CalendarAvailability\Http\Requests\CalendarAvailabilityShow;
 use App\Modules\CalendarAvailability\Http\Requests\CalendarAvailabilityStore;
 use App\Modules\CalendarAvailability\Contracts\CalendarAvailability as CalendarService;
-use App\Modules\CalendarAvailability\Contracts\CalendarAvailabilityFormatter;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 
 class CalendarAvailabilityController extends Controller
@@ -21,24 +21,24 @@ class CalendarAvailabilityController extends Controller
      *
      * @param CalendarAvailabilityIndex $request
      * @param CalendarService $service
-     * @param CalendarAvailabilityFormatter $formatter
      *
      * @return Response
      */
     public function index(
         CalendarAvailabilityIndex $request,
-        CalendarService $service,
-        CalendarAvailabilityFormatter $formatter
+        CalendarService $service
     ) {
-        list($users, $dates, $availabilities) =
-            $service->find($request->input('from'),
-                $request->input('limit', 10));
+        $startDate = Carbon::parse($request->input('from'));
+        $endDate = with(clone ($startDate))
+            ->addDays($request->input('limit', 10) - 1);
 
-        return ApiResponse::responseOk([
-            'users' => $users,
-            'days' => $formatter->formatDates($dates),
-            'availabilities' => $formatter->formatAvailabilities($availabilities),
-        ]);
+        $users = $service->find($startDate, $endDate);
+
+        return ApiResponse::responseOk($users, 200,
+            [
+                'date_start' => $startDate->format('Y-m-d'),
+                'date_end' => $endDate->format('Y-m-d'),
+            ]);
     }
 
     /**

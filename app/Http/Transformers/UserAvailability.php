@@ -2,10 +2,9 @@
 
 namespace App\Http\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\UserAvailability as Availability;
 
-class UserAvailability extends TransformerAbstract
+class UserAvailability extends AbstractTransformer
 {
     /**
      * Transform UserAvailability object into array
@@ -17,6 +16,7 @@ class UserAvailability extends TransformerAbstract
     public function transform(Availability $availability)
     {
         return [
+            'day' => $availability->day,
             'time_start' => $availability->time_start,
             'time_stop' => $availability->time_stop,
             'available' => (bool)$availability->available,

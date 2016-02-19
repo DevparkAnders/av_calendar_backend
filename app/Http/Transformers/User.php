@@ -2,10 +2,9 @@
 
 namespace App\Http\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\User as U;
 
-class User extends TransformerAbstract
+class User extends AbstractTransformer
 {
     /**
      * Transform User object into array
@@ -16,7 +15,7 @@ class User extends TransformerAbstract
      */
     public function transform(U $user)
     {
-        return [
+        $data = [
             'id' => $user->id,
             'email' => $user->email,
             'first_name' => $user->first_name,
@@ -25,5 +24,9 @@ class User extends TransformerAbstract
             'avatar' => $user->avatar,
             'deleted' => (bool) $user->deleted,
         ];
+        
+        $data = $this->transformRelations($data, $user);
+        
+        return $data;
     }
 }

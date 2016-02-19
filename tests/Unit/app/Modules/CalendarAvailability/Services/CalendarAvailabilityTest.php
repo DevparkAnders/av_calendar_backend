@@ -6,6 +6,7 @@ use App\Models\RoleType;
 use App\Models\User;
 use App\Models\UserAvailability;
 use App\Modules\CalendarAvailability\Services\CalendarAvailability;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CalendarAvailabilityTest extends \TestCase
@@ -23,31 +24,6 @@ class CalendarAvailabilityTest extends \TestCase
         $this->service = $this->app->make(CalendarAvailability::class);
     }
 
-    public function testFind_verifyDatesForSingleDay()
-    {
-        list(, $dates, ) = $this->service->find('2016-02-10', 1);
-        $this->assertEquals([
-            '2016-02-10',
-        ], $dates);
-    }
-
-    public function testFind_verifyDatesForMultipleDays()
-    {
-        list(, $dates, ) = $this->service->find('2016-02-25', 10);
-        $this->assertEquals([
-            '2016-02-25',
-            '2016-02-26',
-            '2016-02-27',
-            '2016-02-28',
-            '2016-02-29',
-            '2016-03-01',
-            '2016-03-02',
-            '2016-03-03',
-            '2016-03-04',
-            '2016-03-05',
-        ], $dates);
-    }
-
     public function testFind_verifyUsers_forAdmin()
     {
         \DB::table('users')->delete();
@@ -57,13 +33,21 @@ class CalendarAvailabilityTest extends \TestCase
         $usersNotDeleted = factory(User::class, 3)->create(['deleted' => 0]);
         $usersDeleted = factory(User::class, 2)->create(['deleted' => 1]);
 
-        list($users, ) = $this->service->find('2016-02-10', 1);
+        $users = $this->service->find(Carbon::parse('2016-02-10'), Carbon::parse('2016-02-10'));
+        // himself + not deleted users
         $this->assertEquals(1 + 3, $users->count());
 
+        // valid users
         $this->assertEquals($this->user->id, $users[0]->id);
         $this->assertEquals($usersNotDeleted[0]->id, $users[1]->id);
         $this->assertEquals($usersNotDeleted[1]->id, $users[2]->id);
         $this->assertEquals($usersNotDeleted[2]->id, $users[3]->id);
+
+        // empty availabilities
+        $this->assertEquals([], $users[0]->availabilities->toArray());
+        $this->assertEquals([], $users[1]->availabilities->toArray());
+        $this->assertEquals([], $users[2]->availabilities->toArray());
+        $this->assertEquals([], $users[3]->availabilities->toArray());
     }
 
     public function testFind_verifyUsers_forDeveloper()
@@ -94,11 +78,17 @@ class CalendarAvailabilityTest extends \TestCase
             ],
         ]);
 
-        list($users, ) = $this->service->find('2016-02-10', 1);
+        $users = $this->service->find(Carbon::parse('2016-02-10'), Carbon::parse('2016-02-10'));
+        
+        //himself + user sharing same project 
         $this->assertEquals(1 + 1, $users->count());
 
         $this->assertEquals($this->user->id, $users[0]->id);
         $this->assertEquals($usersNotDeleted[0]->id, $users[1]->id);
+
+        // empty availabilities
+        $this->assertEquals([], $users[0]->availabilities->toArray());
+        $this->assertEquals([], $users[1]->availabilities->toArray());
     }
 
     public function testFind_verifyAvailabilitiesForAdminSingleDay()
@@ -110,13 +100,29 @@ class CalendarAvailabilityTest extends \TestCase
         list($day, $usersNotDeleted, $availabilities) =
             $this->createAvailabilities();
 
-        list(, , $av) = $this->service->find($day, 1);
+        $users = $this->service->find(Carbon::parse($day), Carbon::parse($day));
 
-        $this->assertEquals(4, $av->count());
-        $this->assertEquals($availabilities[0]['id'], $av[0]->id);
-        $this->assertEquals($availabilities[4]['id'], $av[1]->id);
-        $this->assertEquals($availabilities[3]['id'], $av[2]->id);
-        $this->assertEquals($availabilities[2]['id'], $av[3]->id);
+        $this->assertEquals(1 + 3, $users->count());
+
+        // $this->user
+        $this->assertEquals($this->user->id, $users[0]->id);
+        $this->assertEquals(1, $users[0]->availabilities->count());
+        $this->assertEquals($availabilities[0]['id'], $users[0]->availabilities[0]->id);
+
+        // $usersNotDeleted[0]
+        $this->assertEquals($usersNotDeleted[0]['id'], $users[1]->id);
+        $this->assertEquals(0, $users[1]->availabilities->count());
+
+        // $usersNotDeleted[1]
+        $this->assertEquals($usersNotDeleted[1]['id'], $users[2]->id);
+        $this->assertEquals(2, $users[2]->availabilities->count());
+        $this->assertEquals($availabilities[4]['id'], $users[2]->availabilities[0]->id);
+        $this->assertEquals($availabilities[3]['id'], $users[2]->availabilities[1]->id);
+
+        // $usersNotDeleted[2]
+        $this->assertEquals($usersNotDeleted[2]['id'], $users[3]->id);
+        $this->assertEquals(1, $users[3]->availabilities->count());
+        $this->assertEquals($availabilities[2]['id'], $users[3]->availabilities[0]->id);
     }
 
     public function testFind_verifyAvailabilitiesForAdminMultipleDays()
@@ -128,17 +134,33 @@ class CalendarAvailabilityTest extends \TestCase
         list($day, $usersNotDeleted, $availabilities) =
             $this->createAvailabilities();
 
-        list(, , $av) = $this->service->find($day, 2);
-        $this->assertEquals(8, $av->count());
+        $users = $this->service->find(Carbon::parse($day), Carbon::parse($day)->addDay(1));
 
-        $this->assertEquals($availabilities[0]['id'], $av[0]->id);
-        $this->assertEquals($availabilities[5]['id'], $av[1]->id);
-        $this->assertEquals($availabilities[4]['id'], $av[2]->id);
-        $this->assertEquals($availabilities[3]['id'], $av[3]->id);
-        $this->assertEquals($availabilities[9]['id'], $av[4]->id);
-        $this->assertEquals($availabilities[8]['id'], $av[5]->id);
-        $this->assertEquals($availabilities[2]['id'], $av[6]->id);
-        $this->assertEquals($availabilities[7]['id'], $av[7]->id);
+        $this->assertEquals(1 + 3, $users->count());
+        
+        // $this->user
+        $this->assertEquals($this->user->id, $users[0]->id);
+        $this->assertEquals(2, $users[0]->availabilities->count());
+        $this->assertEquals($availabilities[0]['id'], $users[0]->availabilities[0]->id);
+        $this->assertEquals($availabilities[5]['id'], $users[0]->availabilities[1]->id);
+
+        // $usersNotDeleted[0]
+        $this->assertEquals($usersNotDeleted[0]['id'], $users[1]->id);
+        $this->assertEquals(0, $users[1]->availabilities->count());
+
+        // $usersNotDeleted[1]
+        $this->assertEquals($usersNotDeleted[1]['id'], $users[2]->id);
+        $this->assertEquals(4, $users[2]->availabilities->count());
+        $this->assertEquals($availabilities[4]['id'], $users[2]->availabilities[0]->id);
+        $this->assertEquals($availabilities[3]['id'], $users[2]->availabilities[1]->id);
+        $this->assertEquals($availabilities[9]['id'], $users[2]->availabilities[2]->id);
+        $this->assertEquals($availabilities[8]['id'], $users[2]->availabilities[3]->id);
+        
+        // $usersNotDeleted[2]
+        $this->assertEquals($usersNotDeleted[2]['id'], $users[3]->id);
+        $this->assertEquals(2, $users[3]->availabilities->count());
+        $this->assertEquals($availabilities[2]['id'], $users[3]->availabilities[0]->id);
+        $this->assertEquals($availabilities[7]['id'], $users[3]->availabilities[1]->id);
     }
 
     public function testFind_verifyAvailabilitiesForDeveloperSingleDay()
@@ -169,12 +191,20 @@ class CalendarAvailabilityTest extends \TestCase
             ],
         ]);
 
-        list(, , $av) = $this->service->find($day, 1);
+        $users = $this->service->find(Carbon::parse($day), Carbon::parse($day));
+        
+        $this->assertEquals(1 + 1, $users->count());
 
-        $this->assertEquals(3, $av->count());
-        $this->assertEquals($availabilities[0]['id'], $av[0]->id);
-        $this->assertEquals($availabilities[4]['id'], $av[1]->id);
-        $this->assertEquals($availabilities[3]['id'], $av[2]->id);
+        // $this->user
+        $this->assertEquals($this->user->id, $users[0]->id);
+        $this->assertEquals(1, $users[0]->availabilities->count());
+        $this->assertEquals($availabilities[0]['id'], $users[0]->availabilities[0]->id);
+
+        // $usersNotDeleted[1]
+        $this->assertEquals($usersNotDeleted[1]['id'], $users[1]->id);
+        $this->assertEquals(2, $users[1]->availabilities->count());
+        $this->assertEquals($availabilities[4]['id'], $users[1]->availabilities[0]->id);
+        $this->assertEquals($availabilities[3]['id'], $users[1]->availabilities[1]->id);
     }
 
     public function testFind_verifyAvailabilitiesForDeveloperMultipleDays()
@@ -205,15 +235,23 @@ class CalendarAvailabilityTest extends \TestCase
             ],
         ]);
 
-        list(, , $av) = $this->service->find($day, 2);
+        $users = $this->service->find(Carbon::parse($day), Carbon::parse($day)->addDays(1));
 
-        $this->assertEquals(6, $av->count());
-        $this->assertEquals($availabilities[0]['id'], $av[0]->id);
-        $this->assertEquals($availabilities[5]['id'], $av[1]->id);
-        $this->assertEquals($availabilities[4]['id'], $av[2]->id);
-        $this->assertEquals($availabilities[3]['id'], $av[3]->id);
-        $this->assertEquals($availabilities[9]['id'], $av[4]->id);
-        $this->assertEquals($availabilities[8]['id'], $av[5]->id);
+        $this->assertEquals(1 + 1, $users->count());
+
+        // $this->user
+        $this->assertEquals($this->user->id, $users[0]->id);
+        $this->assertEquals(2, $users[0]->availabilities->count());
+        $this->assertEquals($availabilities[0]['id'], $users[0]->availabilities[0]->id);
+        $this->assertEquals($availabilities[5]['id'], $users[0]->availabilities[1]->id);
+
+        // $usersNotDeleted[1]
+        $this->assertEquals($usersNotDeleted[1]['id'], $users[1]->id);
+        $this->assertEquals(4, $users[1]->availabilities->count());
+        $this->assertEquals($availabilities[4]['id'], $users[1]->availabilities[0]->id);
+        $this->assertEquals($availabilities[3]['id'], $users[1]->availabilities[1]->id);
+        $this->assertEquals($availabilities[9]['id'], $users[1]->availabilities[2]->id);
+        $this->assertEquals($availabilities[8]['id'], $users[1]->availabilities[3]->id);
     }
 
     protected function createAvailabilities()

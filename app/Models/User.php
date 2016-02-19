@@ -6,6 +6,7 @@ use App\Modules\User\Traits\Active;
 use App\Modules\User\Traits\Allowed;
 use App\Modules\User\Traits\Fillable;
 use App\Modules\User\Traits\Removeable;
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Foundation\Auth\Access\Authorizable;
@@ -80,7 +81,32 @@ class User extends Model implements
      */
     public function availabilities()
     {
-        return $this->hasMany(UserAvailability::class);
+        return $this->hasMany(UserAvailability::class)
+            ->orderBy('user_id', 'ASC')
+            ->orderBy('day', 'ASC')
+            ->orderBy('time_start', 'ASC');
+    }
+
+    /**
+     * Loading availabilities relationship with date constraints
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|static
+     */
+    public function scopeWithAvailabilities(
+        $query,
+        Carbon $startDate,
+        Carbon $endDate
+    ) {
+        return $query->with([
+            'availabilities' =>
+                function ($q) use ($startDate, $endDate) {
+                    $q->where('day', '>=', $startDate->format('Y-m-d'))
+                        ->where('day', '<=', $endDate->format('Y-m-d'));
+                },
+        ]);
     }
 
     // scopes

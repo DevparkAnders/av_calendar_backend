@@ -47,7 +47,5 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(\App\Modules\CalendarAvailability\Contracts\CalendarAvailability::class,
             \App\Modules\CalendarAvailability\Services\CalendarAvailability::class);
-        $this->app->bind(\App\Modules\CalendarAvailability\Contracts\CalendarAvailabilityFormatter::class,
-            \App\Modules\CalendarAvailability\Services\CalendarAvailabilityFormatter::class);
     }
 }
