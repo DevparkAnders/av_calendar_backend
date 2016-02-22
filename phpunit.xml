@@ -14,8 +14,11 @@
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">app/</directory>
+            <exclude>
+                <directory suffix=".php">app/Modules/*/Database/</directory>
+            </exclude>            
         </whitelist>
     </filter>
     <php>
