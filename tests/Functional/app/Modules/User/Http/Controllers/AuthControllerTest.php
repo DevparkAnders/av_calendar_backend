@@ -14,28 +14,19 @@ class AuthControllerTest extends \TestCase
     public function testLogin_withoutData()
     {
         $this->createUser();
-        $this->post('/auth')->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'email',
-                    'password',
-                ],
-            ])->isJson();
+        $this->post('/auth');
+
+        $this->verifyValidationResponse(['email', 'password']);
     }
 
-    public function testLogin_withMissingPassowrd()
+    public function testLogin_withMissingPassword()
     {
         $this->createUser();
         $this->post('/auth', [
-            'email' => $this->userPassword,
-        ])->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'password',
-                ],
-            ])->isJson();
+            'email' => $this->userEmail,
+        ]);
+
+        $this->verifyValidationResponse(['password'], ['email']);
     }
 
     public function testLogin_withInvalidPassword()
@@ -46,10 +37,8 @@ class AuthControllerTest extends \TestCase
             'password' => $this->userPassword . 'test',
         ];
 
-        $this->post('/auth', $data)
-            ->seeStatusCode(401)
-            ->seeJsonContains(['code' => ErrorCode::AUTH_INVALID_LOGIN_DATA])
-            ->isJson();
+        $this->post('/auth', $data);
+        $this->verifyErrorResponse(401, ErrorCode::AUTH_INVALID_LOGIN_DATA);
     }
 
     public function testLogin_withValidPassword()
@@ -81,10 +70,8 @@ class AuthControllerTest extends \TestCase
             'password' => $this->userPassword,
         ];
 
-        $this->post('/auth', $data)
-            ->seeStatusCode(401)
-            ->seeJsonContains(['code' => ErrorCode::AUTH_INVALID_LOGIN_DATA])
-            ->isJson();
+        $this->post('/auth', $data);
+        $this->verifyErrorResponse(401, ErrorCode::AUTH_INVALID_LOGIN_DATA);
 
         $this->assertFalse(auth()->check());
     }
@@ -92,10 +79,9 @@ class AuthControllerTest extends \TestCase
     public function testLogout_whenNotLoggedIn()
     {
         $this->createUser();
-        $this->delete('/auth')
-            ->seeStatusCode(401)
-            ->seeJsonContains(['code' => ErrorCode::AUTH_INVALID_TOKEN])
-            ->isJson();
+        $this->delete('/auth');
+
+        $this->verifyErrorResponse(401, ErrorCode::AUTH_INVALID_TOKEN);
     }
 
     public function testLogout_whenLoggedIn()

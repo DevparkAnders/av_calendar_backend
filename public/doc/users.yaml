@@ -95,7 +95,22 @@ paths:
           schema: 
               $ref: "#/definitions/ErrorResponse"             
                   
-       
+  /users/current:
+    get:
+      summary: Display current user data
+      description: |
+        Displays current user data
+      tags:
+        - User
+      responses:
+        200:
+          description: Current user data
+          schema: 
+              $ref: "#/definitions/SuccessUserResponse"
+        401:
+          description: User has no access to display this page. It probably means that he's not logged in.
+          schema: 
+              $ref: "#/definitions/ErrorResponse"        
                       
 definitions:
   SuccessUsersIndexResponse:
@@ -119,7 +134,18 @@ definitions:
       exec_time:
         type: number
         format: float
-        description: API execution time        
+        description: API execution time   
+             
+  SuccessUserResponse:      
+    type: object
+    properties:
+      data:
+        $ref: "#/definitions/UserWithRole"         
+      exec_time:
+        type: number
+        format: float
+        description: API execution time                              
+             
   User:
     type: object
     properties:
@@ -147,6 +173,59 @@ definitions:
         type: number
         format: int
         description: Whether user has been deleted
+        
+  UserWithRole:
+    type: object
+    properties:
+      id:
+        type: number
+        format: int
+        description: User id
+      email:   
+        type: string
+        description: User e-mail
+      first_name:   
+        type: string
+        description: User first name
+      last_name:   
+        type: string
+        description: User last name
+      role_id:   
+        type: number
+        format: int
+        description: User role id
+      avatar:
+        type: string
+        description: User avatar
+      deleted:
+        type: number
+        format: int
+        description: Whether user has been deleted
+      role:
+          $ref: "#/definitions/RoleStructure"  
+            
+            
+  RoleStructure:
+    type: object
+    properties:
+      data:
+        type: array
+        description: Role data
+        items: 
+            $ref: "#/definitions/Role"          
+                  
+  Role:
+    type: object
+    properties:
+      id:
+        type: number
+        format: int
+        description: Role id
+      name:   
+        type: string
+        description: Role slug                 
+        
+        
   ErrorResponse:
     type: object
     properties:
