@@ -19,14 +19,9 @@ class PasswordControllerTest extends \TestCase
     {
         $this->cleanEmails();
         $this->createUser();
-        $this->post('/password/reset')->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'email',
-                    'url',
-                ],
-            ])->isJson();
+        $this->post('/password/reset');
+        
+        $this->verifyValidationResponse(['email', 'url']);
 
         $messages = $this->getEmails();
         $this->assertEquals(0, count($messages));
@@ -39,9 +34,9 @@ class PasswordControllerTest extends \TestCase
         $this->post('/password/reset', [
             'email' => $this->userEmail . 'xxx',
             'url' => $this->testUrl,
-        ])->seeStatusCode(404)
-            ->seeJsonContains(['code' => ErrorCode::PASSWORD_NO_USER_FOUND])
-            ->isJson();
+        ]);
+
+        $this->verifyErrorResponse(404, ErrorCode::PASSWORD_NO_USER_FOUND);
 
         $messages = $this->getEmails();
         $this->assertEquals(0, count($messages));
@@ -76,17 +71,9 @@ class PasswordControllerTest extends \TestCase
     {
         $this->createUser();
 
-        $this->put('/password/reset', [
-        ])->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'token',
-                    'email',
-                    'password',
-                ],
-            ])
-            ->isJson();
+        $this->put('/password/reset', []);
+
+        $this->verifyValidationResponse(['token', 'email', 'password']);
     }
 
     public function testReset_withValidData()
@@ -124,9 +111,9 @@ class PasswordControllerTest extends \TestCase
             'token' => $token,
             'password' => $newPassword,
             'password_confirmation' => 'test00',
-        ])->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::PASSWORD_INVALID_TOKEN])
-            ->isJson();
+        ]);
+
+        $this->verifyErrorResponse(422, ErrorCode::PASSWORD_INVALID_TOKEN);
     }
 
     public function testReset_withInvalidEmail()
@@ -141,9 +128,9 @@ class PasswordControllerTest extends \TestCase
             'token' => $token,
             'password' => $newPassword,
             'password_confirmation' => 'test00',
-        ])->seeStatusCode(404)
-            ->seeJsonContains(['code' => ErrorCode::PASSWORD_NO_USER_FOUND])
-            ->isJson();
+        ]);
+
+        $this->verifyErrorResponse(404, ErrorCode::PASSWORD_NO_USER_FOUND);
     }
 
     public function testReset_withInvalidPassword()
@@ -158,9 +145,9 @@ class PasswordControllerTest extends \TestCase
             'token' => $token,
             'password' => $newPassword,
             'password_confirmation' => 'test00',
-        ])->seeStatusCode(404)
-            ->seeJsonContains(['code' => ErrorCode::PASSWORD_NO_USER_FOUND])
-            ->isJson();
+        ]);
+
+        $this->verifyErrorResponse(404, ErrorCode::PASSWORD_NO_USER_FOUND);
     }
 
     protected function createPasswordToken($expired = false)

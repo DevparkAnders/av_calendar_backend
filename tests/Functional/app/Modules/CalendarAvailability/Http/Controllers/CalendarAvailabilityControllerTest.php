@@ -22,18 +22,24 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->post('/users/' . $newUser->id . '/availabilities/' .
             Carbon::now()->format('Y-m-d'), [
             'availabilities' => [
-                ['time_start' => 'test'],
-                ['time_stop' => 'test'],
+                ['time_start' => 'test', 'available' => true, ],
+                ['time_start' => '08:23:23', 'time_stop' => 'test'],
             ],
-        ])->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'availabilities.0.time_start',
-                    'availabilities.1.time_stop',
-                ],
-            ])
-            ->isJson();
+        ]);
+
+        $this->verifyValidationResponse([
+            'availabilities.0.time_start',
+            'availabilities.1.time_stop',
+            'availabilities.1.available',
+        ], [
+            'availabilities.0.available',
+            'availabilities.0.user',
+            'availabilities.0.day',
+            'availabilities.0.time_stop',
+            'availabilities.1.time_start',
+            'availabilities.0.user',
+            'availabilities.0.day',
+        ]);
     }
 
     public function testStore_withValidDataWhenAdmin()
@@ -183,14 +189,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->post('/users/' . $newUsers[0]->id . '/availabilities/' .
             $today->format('Y-m-d'), [
             'availabilities' => $newAvailabilities,
-        ])->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'user',
-                ],
-            ])
-            ->isJson();
+        ]);
+
+        $this->verifyValidationResponse(['user']);
 
         // verify number of results in database
         $this->assertEquals(1, \DB::table('user_availability')
@@ -301,9 +302,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
 
     public function testShow_whenUserDoesNotExists()
     {
-        // @todo seems that isJson method doesn't work as expected
         $this->get('/users/' . 99999999 . '/availabilities/' .
-            Carbon::now()->format('Y-m-d'))->seeStatusCode(404)->isJson();
+            Carbon::now()->format('Y-m-d'));
+        $this->verifyErrorResponse(404, ErrorCode::NOT_FOUND);
     }
 
     public function testShow_whenUserExistsForToday()
@@ -379,7 +380,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
             $this->prepareGetData();
 
         $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
-            $tomorrow->format('Y-m-d'))->seeStatusCode(401);
+            $tomorrow->format('Y-m-d'));
+
+        $this->verifyErrorResponse(401, ErrorCode::NO_PERMISSION);
     }
 
     public function testShow_whenDeveloper_forOtherUserInSameProject()
@@ -412,14 +415,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
         list($newUsers, $today, $tomorrow, $availabilities) =
             $this->prepareGetData();
 
-        $this->get('/users/availabilities?')->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'from',
-                ],
-            ])
-            ->isJson();
+        $this->get('/users/availabilities?');
+
+        $this->verifyValidationResponse(['from'], ['limit']);
     }
 
     public function testIndex_whenAdmin()
