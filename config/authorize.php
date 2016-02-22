@@ -28,6 +28,7 @@ return [
             'role.index',
             'user.index',
             'user.store',
+            'user.current',
             'calendar.index',
             'calendar.store',
             'calendar.show',
@@ -49,6 +50,7 @@ return [
                 'calendar.index',
                 'calendar.store',
                 'calendar.show',
+                'user.current',
             ],
 
             App\Models\RoleType::DEVELOPER => [
@@ -57,10 +59,12 @@ return [
                 'calendar.index',
                 'calendar.store',
                 'calendar.show',
+                'user.current',
             ],
 
             App\Models\RoleType::CLIENT => [
                 'role.index',
+                'user.current',
             ],
         ],
     ],

@@ -23,6 +23,8 @@ Route::group(['middleware' => 'api'], function () {
                 // users
                 Route::get('users', 'UserController@index')
                     ->name('users.index');
+                Route::get('users/current', 'UserController@current')
+                    ->name('users.current');
                 Route::post('users', 'UserController@store')
                     ->name('users.store');
             });

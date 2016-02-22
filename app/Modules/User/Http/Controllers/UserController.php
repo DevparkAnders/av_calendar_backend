@@ -63,4 +63,19 @@ class UserController extends Controller
 
         return ApiResponse::responseOk($user, 201);
     }
+
+    /**
+     * Return current user data
+     *
+     * @param Guard $auth
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function current(Guard $auth)
+    {
+        $user = $auth->user();
+        $user->load('role');
+
+        return ApiResponse::responseOk($user);
+    }
 }
