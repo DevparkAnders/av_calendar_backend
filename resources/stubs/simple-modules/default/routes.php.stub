@@ -1,5 +1,5 @@
 <?php
 
-Route::group(['middleware' => ['api']], function () {
+Route::group(['middleware' => 'api_authorized'], function () {
     Route::resource('{plural|lower}', '{class}Controller');
 });

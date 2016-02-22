@@ -61,7 +61,6 @@ class Handler extends ExceptionHandler
         }
 
         // otherwise we will return custom API response
-        $errorCode = null;
 
         switch ($class) {
             case ModelNotFoundException::class:

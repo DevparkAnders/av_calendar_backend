@@ -30,9 +30,26 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
         ],
-
-        'api' => [
+        
+        // for guests only - login, password remind
+        'api_guest' => [
+            'throttle:5,1', 
+            'guest'
         ],
+        
+        // when logout (without token refresh and permission checking)
+        'api_logout' => [
+            'throttle:60,1',
+            'auth',
+        ],
+        
+        // standard api authorized user with permission checking
+        'api_authorized' => [
+            'throttle:60,1',
+            'auth',
+            'refresh.token',
+            'authorize',
+        ]
     ];
 
     /**
