@@ -123,15 +123,9 @@ class UserControllerTest extends \TestCase
     {
         $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
-        $this->post('/users')->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'email',
-                    'role_id',
-                ],
-            ])
-            ->isJson();
+        $this->post('/users');
+
+        $this->verifyValidationResponse(['email', 'role_id']);
     }
 
     public function testStoreUser_withData()
@@ -208,7 +202,8 @@ class UserControllerTest extends \TestCase
     {
         $this->doesntExpectEvents(\App\Modules\User\Events\UserWasCreated::class);
 
-        $this->post('/users', [])->seeStatusCode(401);
+        $this->post('/users', []);
+        $this->verifyErrorResponse(401);
     }
 
     public function testStoreUser_whenNotLoggedWithoutPassword()
@@ -222,16 +217,17 @@ class UserControllerTest extends \TestCase
         $data['password_confirmation'] = $data['password'];
         $data['send_user_notification'] = true;
 
-        $this->post('/users', $data)->seeStatusCode(422)
-            ->seeJsonContains(['code' => ErrorCode::VALIDATION_FAILED])
-            ->seeJsonStructure([
-                'fields' => [
-                    'password',
-                    'first_name',
-                    'last_name'
-                ],
-            ])
-            ->isJson();
+        $this->post('/users', $data);
+
+        $this->verifyValidationResponse([
+            'password',
+            'first_name',
+            'last_name',
+        ],[
+            'role_id',
+            'password_confirmation',
+            'send_user_notification',
+        ]);
     }
 
     public function testStoreUser_whenLoggedAsNonAdmin()
@@ -270,6 +266,31 @@ class UserControllerTest extends \TestCase
         $this->assertEquals($data['email'], $dbUser->email);
         $this->assertEquals($expectedRoleId, $dbUser->role_id);
 
-        $this->assertNotEquals($dbUser->password, '');        
+        $this->assertNotEquals($dbUser->password, '');
+    }
+
+    public function testCurrent_whenLogged()
+    {
+        $this->createUser()->setRole(RoleType::DEVELOPER);
+        auth()->loginUsingId($this->user->id);
+
+        $this->get('/users/current')
+            ->seeStatusCode(200)
+            ->isJson();
+
+        $json = $this->decodeResponseJson();
+        $responseUser = $json['data'];
+
+        $expectedData = $this->formatUser(User::find($this->user->id));
+        $expectedData['role']['data'] =
+            Role::where('name', RoleType::DEVELOPER)->first()->toArray();
+
+        $this->assertEquals($expectedData, $responseUser);
+    }
+
+    public function testCurrent_whenNotLogged()
+    {
+        $this->get('/users/current')->isJson();
+        $this->verifyErrorResponse(401);
     }
 }
