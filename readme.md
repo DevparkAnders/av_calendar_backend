@@ -16,9 +16,11 @@ In order to follow code standards, you should use PSR-2, install [PHP CS Fixer](
 
 ### Installation
 
-1. Copy `.env.sample` as `.env`
+1. Copy `.env.example` as `.env`
 
-2. In `.env` file:
+2. Run `composer install`
+
+3. In `.env` file:
 
     - Set `APP_KEY` to random 32 characters long string using the following command:
     
@@ -26,23 +28,33 @@ In order to follow code standards, you should use PSR-2, install [PHP CS Fixer](
     php artisan key:generate
     ```
     
-    - If you set `SQL_LOG_QUERIES` or `SQL_LOG_SLOW_QUERIES` to true (to log SQL queries), make sure you have created directory set as `SQL_LOG_DIRECTORY` in storage path and you have valid permissions to create and override files in this directory    
+    - If you set `SQL_LOG_QUERIES` or `SQL_LOG_SLOW_QUERIES` to true (to log SQL queries), make sure you have created directory set as `SQL_LOG_DIRECTORY` in storage path and you have valid permissions to create and override files in this directory
+        
+    - Fill in all other data in `.env` file (database connection admin e-mail and password and so on)        
 
-3. Run    
+4. Run    
 
     ```
-    php artisan jwt:generate
+    php artisan jwt:generate --show
+    ```
+   
+    and put key you got into .`env` file as `JWT_SECRET` value
+    
+5. Run
+ 
+    ```
+    php artisan migrate --seed 
     ```
     
-    to generate random `JWT_SECRET` token in your `.env` file
+    to run migrations and seeds into database  
 
 ### Running tests
 
 In order to run `phpunit` tests you should prepare a few things.
 
-1. You need to create separate database connection and run all migrations into this database and then run seeding. 
-
-2. You need to fill this database connection settings in `.env` file in `TESTING` section
+1. You need to create separate database connection and set it in `.env` file in `TESTING` section
+ 
+2. Run `php artisan migrate --seed --database=mysql_testing` to run all migrations and seeds into this testing database (don't change `mysql_testing` when running into this command - it's not the database name!)
 
 3. You should make sure that in your `.env` file `MAIL_HOST` is set to `mailtrap.io` and all e-mail settings are filled correctly
 
