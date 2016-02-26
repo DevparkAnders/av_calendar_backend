@@ -29,8 +29,11 @@ class CalendarAvailability implements CalendarAvailabilityContract
      */
     public function find(Carbon $startDate, Carbon $endDate)
     {
-        return get_class($this->user)::active()->allowed()
-            ->withAvailabilities($startDate, $endDate)
-            ->orderBy('id', 'ASC')->get();
+        return $this->user->newQuery()
+                        ->active()
+                        ->allowed()
+                        ->orderBy('id', 'asc')
+                        ->withAvailabilities($startDate, $endDate)
+                        ->get();
     }
 }
