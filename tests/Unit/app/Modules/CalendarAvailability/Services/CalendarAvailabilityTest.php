@@ -27,4 +27,10 @@ class CalendarAvailabilityTest extends \PHPUnit_Framework_TestCase
 
         $service->find($from, $till);
     }
+
+    public function tearDown()
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
 }
