@@ -1,8 +1,7 @@
 <?php
 
-namespace Tests\Functional\App\Http\Controllers;
+namespace Tests\Functional\app\Http\Controllers;
 
-use App\Helpers\ErrorCode;
 use App\Models\Role;
 use App\Models\RoleType;
 use App\Models\User;
