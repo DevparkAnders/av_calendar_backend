@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Functional\App\Http\Controllers;
+namespace Tests\Functional\app\Http\Controllers;
 
 use App\Models\Role;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Functional\App\Http\Controllers;
+namespace Tests\Functional\app\Http\Controllers;
 
 use App\Helpers\ErrorCode;
 use Carbon\Carbon;
