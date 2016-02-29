@@ -19,17 +19,15 @@ trait Allowed
     {
         // get user by id or use object - if not passed any, we use current
         // user
-        if ($user) {
-            if (!$user instanceof Model) {
-                $user = self::find($user);
-            }
-        } else {
+        if (!$user) {
             $user = auth()->user();
+        } elseif (!$user instanceof Model) {
+            $user = self::find($user);
         }
 
         // user has not been found - return no results
         if (!$user) {
-            return $query->where('id', 0);
+            return $query->whereRaw('1 = 0');
         }
 
         // for admin we don't limit results
@@ -39,16 +37,10 @@ trait Allowed
 
         // for others we will choose only users assigned to same projects
         return $query->where(function ($q) use ($user) {
-            $q->where('id', $user->id)->orWhere(function ($q) use ($user) {
-                $q->whereIn($this->getTable() . '.id',
-                    function ($q) use ($user) {
-                        $q->select('user_id')->from('project_user')
-                            ->whereIn('project_id', function ($q) use ($user) {
-                                $q->select('project_id')->from('project_user')
-                                    ->where('user_id', $user->id);
-                            });
-                    });
-            });
+            $q->where('id', $user->id)
+                ->orWhereHas('projects.users', function ($q) use ($user) {
+                    $q->where('project_user.user_id', $user->id);
+                });
         });
     }
 }

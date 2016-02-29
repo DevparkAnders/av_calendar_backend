@@ -101,11 +101,10 @@ class User extends Model implements
         Carbon $endDate
     ) {
         return $query->with([
-            'availabilities' =>
-                function ($q) use ($startDate, $endDate) {
-                    $q->where('day', '>=', $startDate->format('Y-m-d'))
-                        ->where('day', '<=', $endDate->format('Y-m-d'));
-                },
+            'availabilities' => function ($q) use ($startDate, $endDate) {
+                $q->where('day', '>=', $startDate->format('Y-m-d'))
+                    ->where('day', '<=', $endDate->format('Y-m-d'));
+            },
         ]);
     }
 
@@ -120,13 +119,7 @@ class User extends Model implements
      */
     public function getRoles()
     {
-        $roles = [];
-
-        if ($this->role) {
-            $roles[] = $this->role->name;
-        }
-
-        return $roles;
+        return $this->role ? [$this->role->name] : [];
     }
 
     /**
