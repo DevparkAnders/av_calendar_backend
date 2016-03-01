@@ -3,8 +3,9 @@
 namespace Tests\Functional\app\Http\Controllers;
 
 use App\Models\Role;
-use App\Models\RoleType;
 use App\Models\User;
+use App\Models\Project;
+use App\Models\RoleType;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UserControllerTest extends \TestCase
@@ -54,48 +55,28 @@ class UserControllerTest extends \TestCase
         $this->createUser()->setRole(RoleType::DEVELOPER);
 
         $newUsers = factory(User::class, 7)->create();
+        $projectOne = factory(Project::class)->create();
+        $projectTwo = factory(Project::class)->create();
+        $projectThree = factory(Project::class)->create();
 
         // now we assign current user and other users into different project
         // current user we assign to project 1 and 3
-        \DB::table('project_user')->insert([
-                [
-                    'project_id' => 1,
-                    'user_id' => $this->user->id,
-                ],
-                [
-                    'project_id' => 1,
-                    'user_id' => $newUsers[0]->id,
-                ],
-                [
-                    'project_id' => 1,
-                    'user_id' => $newUsers[3]->id,
-                ],
-                [
-                    'project_id' => 3,
-                    'user_id' => $this->user->id,
-                ],
-                [
-                    'project_id' => 3,
-                    'user_id' => $newUsers[2]->id,
-                ],
-                [
-                    'project_id' => 3,
-                    'user_id' => $newUsers[4]->id,
-                ],
-                [
-                    'project_id' => 4,
-                    'user_id' => $newUsers[1]->id,
-                ],
-                [
-                    'project_id' => 4,
-                    'user_id' => $newUsers[5]->id,
-                ],
-                [
-                    'project_id' => 4,
-                    'user_id' => $newUsers[6]->id,
-                ],
-            ]
-        );
+        $projectOne->users()->sync([
+            $this->user->id,
+            $newUsers[0]->id,
+            $newUsers[3]->id,
+        ]);
+        $projectTwo->users()->sync([
+            $this->user->id,
+            $newUsers[2]->id,
+            $newUsers[4]->id,
+        ]);
+        $projectThree->users()->sync([
+            $newUsers[1]->id,
+            $newUsers[5]->id,
+            $newUsers[6]->id,
+        ]);
+
         auth()->loginUsingId($this->user->id);
 
         $this->get('/users')

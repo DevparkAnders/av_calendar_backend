@@ -2,10 +2,11 @@
 
 namespace Tests\Functional\app\Modules\CalendarAvailability\Http\Controllers;
 
-use App\Helpers\ErrorCode;
-use App\Models\RoleType;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Project;
+use App\Models\RoleType;
+use App\Helpers\ErrorCode;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CalendarAvailabilityControllerTest extends \TestCase
@@ -393,6 +394,8 @@ class CalendarAvailabilityControllerTest extends \TestCase
         list($newUsers, $today, $tomorrow, $availabilities) =
             $this->prepareGetData();
 
+        factory(Project::class)->create(['id' => 1]);
+
         \DB::table('project_user')->insert([
             [
                 'project_id' => 1,
@@ -432,14 +435,14 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->get('/users/availabilities?from=' . $today->format('Y-m-d') .
             '&limit=4')
             ->seeStatusCode(200)->isJson();
-        
+
         $json = $this->decodeResponseJson();
 
         $data = $json['data'];
-        
+
         $this->assertEquals($today->format('Y-m-d'), $json['date_start']);
         $this->assertEquals($today->addDays(3)->format('Y-m-d'), $json['date_end']);
-        
+
 
         $this->assertEquals(1 + $newUsers->count(), count($data));
 
@@ -498,7 +501,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
             ->seeStatusCode(200)->isJson();
 
         $data = $this->decodeResponseJson()['data'];
-        
+
         $this->assertEquals(1, count($data));
 
         $this->assertEquals(array_merge($this->formatUser($this->user), [
@@ -518,6 +521,11 @@ class CalendarAvailabilityControllerTest extends \TestCase
         auth()->loginUsingId($this->user->id);
         list($newUsers, $today, $tomorrow, $availabilities) =
             $this->prepareGetData();
+
+        factory(Project::class)->create(['id' => 1]);
+        factory(Project::class)->create(['id' => 2]);
+        factory(Project::class)->create(['id' => 3]);
+        factory(Project::class)->create(['id' => 8]);
 
         \DB::table('project_user')->insert([
                 [

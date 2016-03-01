@@ -20,7 +20,7 @@ class PasswordControllerTest extends \TestCase
         $this->cleanEmails();
         $this->createUser();
         $this->post('/password/reset');
-        
+
         $this->verifyValidationResponse(['email', 'url']);
 
         $messages = $this->getEmails();
@@ -44,6 +44,7 @@ class PasswordControllerTest extends \TestCase
 
     public function testSendResetEmail_withValidEmail()
     {
+        $this->mailtraipInbox = env('MAILTRAP_API_INBOX');
         $this->cleanEmails();
         $this->createUser();
 

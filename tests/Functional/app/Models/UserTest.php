@@ -2,12 +2,13 @@
 
 namespace Tests\Functional\app\Models;
 
-use App\Models\RoleType;
-use App\Models\User;
-use App\Models\UserAvailability;
-use App\Modules\CalendarAvailability\Services\CalendarAvailability;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Project;
+use App\Models\RoleType;
+use App\Models\UserAvailability;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App\Modules\CalendarAvailability\Services\CalendarAvailability;
 
 class UserTest extends \TestCase
 {
@@ -58,6 +59,9 @@ class UserTest extends \TestCase
 
         $usersNotDeleted = factory(User::class, 3)->create(['deleted' => 0]);
         $usersDeleted = factory(User::class, 2)->create(['deleted' => 1]);
+
+        factory(Project::class)->create(['id' => 1]);
+        factory(Project::class)->create(['id' => 5]);
 
         \DB::table('project_user')->insert([
             [
@@ -172,6 +176,9 @@ class UserTest extends \TestCase
         list($day, $usersNotDeleted, $availabilities, $usersDeleted) =
             $this->createAvailabilities();
 
+        factory(Project::class)->create(['id' => 1]);
+        factory(Project::class)->create(['id' => 5]);
+
         \DB::table('project_user')->insert([
             [
                 'project_id' => 1,
@@ -215,6 +222,9 @@ class UserTest extends \TestCase
 
         list($day, $usersNotDeleted, $availabilities, $usersDeleted) =
             $this->createAvailabilities();
+
+        factory(Project::class)->create(['id' => 1]);
+        factory(Project::class)->create(['id' => 5]);
 
         \DB::table('project_user')->insert([
             [
