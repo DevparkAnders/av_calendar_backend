@@ -21,66 +21,51 @@ class LogServiceProvider extends ServiceProvider
     protected $log;
 
     /**
-     * LogServiceProvider constructor.
-     *
-     * @param Application $app
-     */
-    public function __construct(Application $app)
-    {
-        parent::__construct($app);
-        $this->request = $app['request'];
-        $this->log = $app['log'];
-    }
-
-    /**
      * Register the service provider.
      *
      * @return void
      */
     public function boot()
     {
-        $auth = $this->app['auth'];
+        $this->app['log']->getMonolog()->pushProcessor(function ($record) {
+            $auth = $this->app['auth'];
+            $request = $this->app['request'];
 
-        /** @var \Monolog\Logger $monolog */
-        $monolog = $this->log->getMonolog();
-        $monolog->pushProcessor(function ($record) use ($auth) {
-
-            $record['extra'] =
-                [
-                    'user' => [
-                        'id' => $auth->check() ? $auth->user()->id : 0,
-                        'ip' => $this->request->getClientIp(),
-                    ],
-                ];
+            $record['extra'] = [
+                'user' => [
+                    'id' => $auth->id() ?: 0,
+                    'ip' => $request->getClientIp(),
+                ],
+            ];
 
             // try to get artisan command
-            $command = $this->request->server('argv', null);
+            $command = $request->server('argv');
 
             // if artisan command - include it in log
-            if ($command !== null) {
-                if (is_array($command)) {
-                    $command = implode(' ', $command);
-                }
-                $record['extra']['command'] = $command;
-            } else {
-                // if via HTTP - add HTTP data
-                $record['extra']['request'] = [
-                    'url' => $this->request->fullUrl(),
-                    'method' => $this->request->method(),
-                    'input' => $this->request->all(),
-                ];
+            if ($command) {
+                $record['extra']['command'] = is_array($command) ? implode(' ', $command) : $command;
+
+                return $record;
             }
+
+            // if via HTTP - add HTTP data
+            $record['extra']['request'] = [
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'input' => $request->all(),
+            ];
 
             return $record;
         });
     }
 
     /**
-     * Register the service provider.
+     * Register the application services.
      *
      * @return void
      */
     public function register()
     {
+        //
     }
 }

@@ -129,6 +129,6 @@ class User extends Model implements
      */
     public function isAdmin()
     {
-        return (bool)in_array(RoleType::ADMIN, $this->getRoles());
+        return $this->hasRole(RoleType::ADMIN);
     }
 }
