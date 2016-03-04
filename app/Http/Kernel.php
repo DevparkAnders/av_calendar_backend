@@ -15,6 +15,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \App\Http\Middleware\Cors::class,
     ];
 
     /**
@@ -33,8 +34,8 @@ class Kernel extends HttpKernel
         
         // for guests only - login, password remind
         'api_guest' => [
-            'throttle:5,1', 
-            'guest'
+            'throttle:5,1',
+            'guest',
         ],
         
         // when logout (without token refresh and permission checking)
@@ -49,7 +50,7 @@ class Kernel extends HttpKernel
             'auth',
             'refresh.token',
             'authorize',
-        ]
+        ],
     ];
 
     /**
