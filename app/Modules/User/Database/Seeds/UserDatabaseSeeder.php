@@ -54,6 +54,8 @@ class UserDatabaseSeeder extends Seeder
             $u = new User();
             $u->email = $user['email'];
             $u->password = $user['password'];
+            $u->first_name = $user['first_name'];
+            $u->last_name = $user['last_name'];
             $role = $roles->where('name', $user['role'])->first();
             if (!$role) {
                 throw new Exception("Invalid role '{$user['role']}' given for user {$u->email}");
