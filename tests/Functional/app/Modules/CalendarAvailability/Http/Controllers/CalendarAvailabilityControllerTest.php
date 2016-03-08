@@ -308,7 +308,8 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->verifyErrorResponse(404, ErrorCode::NOT_FOUND);
     }
 
-    public function testShow_whenUserExistsForToday()
+    /** @test */
+    public function show_admin_has_displayed_valid_availabilities_for_today()
     {
         $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
@@ -319,20 +320,21 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
             $today->format('Y-m-d'))->seeStatusCode(200)->seeJsonContains([
             'data' => [
-                $this->formatAvailability($availabilities[2]),
-                $this->formatAvailability($availabilities[1]),
+                $this->formatAvailability($availabilities[4]),
+                $this->formatAvailability($availabilities[3]),
             ],
         ])->isJson();
 
         // make sure the order in response is appropriate
         $json = $this->decodeResponseJson()['data'];
-        $this->assertEquals($this->formatAvailability($availabilities[2]),
+        $this->assertEquals($this->formatAvailability($availabilities[4]),
             $json[0]);
-        $this->assertEquals($this->formatAvailability($availabilities[1]),
+        $this->assertEquals($this->formatAvailability($availabilities[3]),
             $json[1]);
     }
 
-    public function testShow_whenUserExistsForTomorrow()
+    /** @test */
+    public function show_admin_has_displayed_valid_availabilities_for_tomorrow()
     {
         $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
@@ -343,7 +345,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->get('/users/' . $newUsers[0]->id . '/availabilities/' .
             $tomorrow->format('Y-m-d'))->seeStatusCode(200)->seeJsonContains([
             'data' => [
-                $this->formatAvailability($availabilities[3]),
+                $this->formatAvailability($availabilities[5]),
             ],
         ])->isJson();
     }
@@ -423,13 +425,14 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->verifyValidationResponse(['from'], ['limit']);
     }
 
-    public function testIndex_whenAdmin()
+    /** @test */
+    public function index_see_all_when_admin()
     {
         \DB::table('users')->delete();
 
         $this->createUser()->setRole(RoleType::ADMIN);
         auth()->loginUsingId($this->user->id);
-        list($newUsers, $today, $tomorrow, $availabilities) =
+        list($newUsers, $today, $tomorrow, $availabilities, $startOfWeek) =
             $this->prepareGetData();
 
         $this->get('/users/availabilities?from=' . $today->format('Y-m-d') .
@@ -440,16 +443,17 @@ class CalendarAvailabilityControllerTest extends \TestCase
 
         $data = $json['data'];
 
-        $this->assertEquals($today->format('Y-m-d'), $json['date_start']);
-        $this->assertEquals($today->addDays(3)->format('Y-m-d'), $json['date_end']);
-
+        $this->assertEquals($startOfWeek->format('Y-m-d'), $json['date_start']);
+        $this->assertEquals($startOfWeek->addDays(3)->format('Y-m-d'),
+            $json['date_end']);
 
         $this->assertEquals(1 + $newUsers->count(), count($data));
 
         $this->assertEquals(array_merge($this->formatUser($this->user), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[0]),
+                    $this->formatAvailability($availabilities[1]),
+                    $this->formatAvailability($availabilities[2]),
                 ],
             ],
         ]), $data[0]);
@@ -457,9 +461,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($newUsers[0]), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[2]),
-                        $this->formatAvailability($availabilities[1]),
-                        $this->formatAvailability($availabilities[3]),
+                    $this->formatAvailability($availabilities[4]),
+                    $this->formatAvailability($availabilities[3]),
+                    $this->formatAvailability($availabilities[5]),
                 ],
             ],
         ]), $data[1]);
@@ -467,7 +471,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($newUsers[1]), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[5]),
+                    $this->formatAvailability($availabilities[7]),
                 ],
             ],
         ]), $data[2]);
@@ -475,7 +479,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($newUsers[2]), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[4]),
+
                 ],
             ],
         ]), $data[3]);
@@ -486,8 +490,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
             ],
         ]), $data[4]);
     }
-
-    public function testIndex_whenDeveloperWithoutProjects()
+    
+    /** @test */
+    public function index_see_only_own_when_developer_without_projects()
     {
         \DB::table('users')->delete();
 
@@ -507,13 +512,15 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($this->user), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[0]),
+                    $this->formatAvailability($availabilities[1]),
+                    $this->formatAvailability($availabilities[2]),
                 ],
             ],
         ]), $data[0]);
     }
 
-    public function testIndex_whenDeveloperWithProjects()
+    /** @test */
+    public function index_see_others_when_developer_and_assigned_to_same_project()
     {
         \DB::table('users')->delete();
 
@@ -563,7 +570,6 @@ class CalendarAvailabilityControllerTest extends \TestCase
             '&limit=4')
             ->seeStatusCode(200)->isJson();
 
-
         $data = $this->decodeResponseJson()['data'];
 
         $this->assertEquals(1 + 3, count($data));
@@ -571,7 +577,8 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($this->user), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[0]),
+                    $this->formatAvailability($availabilities[1]),
+                    $this->formatAvailability($availabilities[2]),
                 ],
             ],
         ]), $data[0]);
@@ -579,9 +586,9 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($newUsers[0]), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[2]),
-                    $this->formatAvailability($availabilities[1]),
+                    $this->formatAvailability($availabilities[4]),
                     $this->formatAvailability($availabilities[3]),
+                    $this->formatAvailability($availabilities[5]),
                 ],
             ],
         ]), $data[1]);
@@ -589,7 +596,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         $this->assertEquals(array_merge($this->formatUser($newUsers[2]), [
             'availabilities' => [
                 'data' => [
-                    $this->formatAvailability($availabilities[4]),
+                    
                 ],
             ],
         ]), $data[2]);
@@ -604,10 +611,30 @@ class CalendarAvailabilityControllerTest extends \TestCase
     protected function prepareGetData()
     {
         $newUsers = factory(User::class, 4)->create(['deleted' => 0]);
-        $today = Carbon::now();
+        $today = Carbon::parse('2016-03-08');
         $tomorrow = with(clone $today)->addDay(1);
+        $yesterday = with(clone $today)->subDay(1);
+        $startOfWeek = clone($yesterday);
+        $inPreviousWeek = with(clone $today)->subDays(2);
 
         $availabilities = [
+            [
+                'time_start' => '12:00:00',
+                'time_stop' => '13:00:30',
+                'available' => 1,
+                'description' => 'Sample description in previous week',
+                'user_id' => $this->user->id,
+                'day' => $inPreviousWeek->format('Y-m-d'),
+            ],
+
+            [
+                'time_start' => '12:00:00',
+                'time_stop' => '13:00:30',
+                'available' => 1,
+                'description' => 'Sample description own yesterday',
+                'user_id' => $this->user->id,
+                'day' => $yesterday->format('Y-m-d'),
+            ],
             [
                 'time_start' => '12:00:00',
                 'time_stop' => '13:00:30',
@@ -669,7 +696,7 @@ class CalendarAvailabilityControllerTest extends \TestCase
         // create sample availabilities for users
         \DB::table('user_availability')->insert($availabilities);
 
-        return [$newUsers, $today, $tomorrow, $availabilities];
+        return [$newUsers, $today, $tomorrow, $availabilities, $startOfWeek];
     }
 
     protected function formatAvailability(array $av)
