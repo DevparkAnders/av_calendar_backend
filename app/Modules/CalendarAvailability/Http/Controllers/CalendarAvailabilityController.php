@@ -28,7 +28,7 @@ class CalendarAvailabilityController extends Controller
         CalendarAvailabilityIndex $request,
         CalendarService $service
     ) {
-        $startDate = Carbon::parse($request->input('from'));
+        $startDate = Carbon::parse($request->input('from'))->startOfWeek();
         $endDate = with(clone ($startDate))
             ->addDays($request->input('limit', 10) - 1);
 
