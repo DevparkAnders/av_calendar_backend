@@ -26,7 +26,7 @@ paths:
       parameters:
         - name: from
           in: query
-          description: Date in format `YYYY-mm-dd`. This is first day from which users availability will be returned (It should be set to monday of current week)
+          description: Date in format `YYYY-mm-dd`. This is used for calculating period for which availabilities will be returned. Be aware that calculated period may differ from given date, so you should use response dates (`date_start` and `date_end`) to be sure for which period availabilities are returned
           required: true
           type: string
         - name: limit
