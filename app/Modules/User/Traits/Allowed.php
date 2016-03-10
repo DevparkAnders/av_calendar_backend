@@ -17,8 +17,7 @@ trait Allowed
      */
     public function scopeAllowed($query, $user = null)
     {
-        // get user by id or use object - if not passed any, we use current
-        // user
+        // get user by id or use object - if not passed any, we use current user
         if (!$user) {
             $user = auth()->user();
         } elseif (!$user instanceof Model) {

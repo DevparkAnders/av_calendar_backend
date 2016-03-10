@@ -17,7 +17,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
  * that is sent by the application. It tries to transform the resources
  * using dedicated transformer if there is one in default namespace.
  *
- * @see \DentalSleepSolutions\Http\Transformers\
+ * @see \App\Http\Transformers\
  */
 class ApiResponse
 {
@@ -105,7 +105,7 @@ class ApiResponse
 //        }
 
         $fractal = new Manager();
-        
+
         $transformerUsed = false;
 
         if (self::isResource($data) &&

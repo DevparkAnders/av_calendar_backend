@@ -52,17 +52,15 @@ class Handler extends ExceptionHandler
         if (config('app.debug', false)) {
             return parent::render($request, $e);
         }
-        
-        $class = get_class($e);
-        
+
         // in case of validation errors, we want to just return response
-        if ($class == HttpResponseException::class) {
+        if ($e instanceof HttpResponseException) {
             return $e->getResponse();
         }
 
         // otherwise we will return custom API response
 
-        switch ($class) {
+        switch (get_class($e)) {
             case ModelNotFoundException::class:
                 $errorCode = ErrorCode::RESOURCE_NOT_FOUND;
                 $responseCode = 404;

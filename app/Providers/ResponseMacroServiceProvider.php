@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Response;
+use Illuminate\Contracts\Routing\ResponseFactory;
 
 class ResponseMacroServiceProvider extends ServiceProvider
 {
@@ -12,19 +12,19 @@ class ResponseMacroServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(ResponseFactory $response)
     {
         // register API response
-        Response::macro('api',
-            function ($data, $status = 200, array $headers = []) {
+        $response->macro('api', function ($data, $status = 200, array $headers = []) {
+            $output = [
+                'response' => $data,
+                'exec_time' => defined('LARAVEL_START')
+                                ? round(microtime(true) - LARAVEL_START, 4)
+                                : 0
+            ];
 
-                $output['response'] = $data;
-                $output['exec_time'] = defined('LARAVEL_START') ?
-                    round(microtime(true) - LARAVEL_START, 4) : 0;
-                
-                return Response::make($output, $status,
-                    $headers);
-            });
+            return $response->make($output, $status, $headers);
+        });
     }
 
     /**
