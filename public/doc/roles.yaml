@@ -4,7 +4,7 @@ info:
   description: Display available system roles
   version: "1.0.0"
 # the domain of the service
-host: cep.app
+host: api.cep.devpark.pl
 # array of all schemes that your API supports
 schemes:
   - http
